@@ -12,7 +12,7 @@ class MainActivity6 : AppCompatActivity() {
     lateinit var home : ImageView
 
     // Change 1
-
+    // Change 2
     lateinit var logOut : ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
