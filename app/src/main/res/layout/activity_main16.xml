@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity16">
+
+    <ImageView
+        android:id="@+id/backToLoginPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back2"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="15dp"
+        app:tint="@color/black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set a new password"
+        android:fontFamily="@font/poppins_semibold"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:id="@+id/labelSent"
+        android:layout_width="306dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Create a new password. Ensure it differs from
+previous ones for security"
+        android:textColor="#202020"
+        android:textSize="12dp" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="313dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rec2408"
+        android:backgroundTint="#EEEEEE"
+        android:fontFamily="@font/poppins_medium"
+        android:inputType="textPassword"
+        android:hint="Enter your password"
+        android:paddingStart="14dp"
+        android:textColor="#202020"
+        android:textColorHint="#AAAAAA"
+        android:textSize="12dp" />
+
+    <EditText
+        android:id="@+id/confirmPassword"
+        android:layout_width="313dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rec2408"
+        android:backgroundTint="#EEEEEE"
+        android:fontFamily="@font/poppins_medium"
+        android:hint="Confirm your password"
+        android:inputType="textPassword"
+        android:paddingStart="14dp"
+        android:textColor="#202020"
+        android:textColorHint="#AAAAAA"
+        android:textSize="12dp" />
+
+    <FrameLayout
+        android:id="@+id/updatePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:layout_width="313dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rect15"
+            android:backgroundTint="#008700"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="Update Password"
+            android:textSize="12dp"
+            android:fontFamily="@font/inter_medium"
+            android:textFontWeight="800"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+
+</LinearLayout>

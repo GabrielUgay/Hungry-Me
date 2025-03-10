@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity4">
+
+    <ImageView
+        android:id="@+id/backToLoginPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back2"
+        android:tint="@color/black"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password?"
+        android:fontFamily="@font/poppins_semibold"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please enter your email to reset the password"
+        android:fontFamily="@font/poppins_semibold"
+        android:textColor="@color/black"
+        android:alpha="0.8"
+        android:textSize="12dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/emailInput"
+        android:layout_width="313dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rec2408"
+        android:backgroundTint="#EEEEEE"
+        android:fontFamily="@font/poppins_medium"
+        android:hint="Enter your email"
+        android:paddingStart="15dp"
+        android:textColor="#202020"
+        android:textColorHint="#AAAAAA"
+        android:textSize="12dp" />
+
+    <FrameLayout
+        android:id="@+id/resetPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="1"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:layout_width="313dp"
+            android:layout_height="49dp"
+            android:background="@drawable/rect15"
+            android:alpha="1"
+            android:backgroundTint="#008700"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="Reset Password"
+            android:textSize="12dp"
+            android:fontFamily="@font/inter_medium"
+            android:textFontWeight="800"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+
+</LinearLayout>

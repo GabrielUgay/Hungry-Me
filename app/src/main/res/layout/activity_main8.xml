@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#202020"
+    tools:context=".MainActivity8">
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="51dp"
+        android:layout_height="55dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.062"
+        app:srcCompat="@drawable/back2" />
+
+    <ImageView
+        android:id="@+id/infoContainer"
+        android:layout_width="383dp"
+        android:layout_height="467dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.42"
+        app:srcCompat="@drawable/contain" />
+
+    <TextView
+        android:id="@+id/aboutUsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/info"
+        android:drawablePadding="5sp"
+        android:fontFamily="@font/inria_sans"
+        android:gravity="center"
+        android:text="ABOUT US"
+        android:textColor="@color/white"
+        android:textFontWeight="700"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.882"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.888" />
+
+    <TextView
+        android:id="@+id/paragraph1"
+        android:layout_width="318dp"
+        android:layout_height="147dp"
+        android:fontFamily="@font/inria_serif"
+        android:gravity="center"
+        android:text="At Hungry Me, we believe good food is just around the corner! Our platform is your gateway to the best flavors from your local markets. Unlike other food delivery services, Hungry Me focuses on connecting you to the small, homegrown vendors and local restaurants that make your community unique."
+        android:textColor="@color/black"
+        android:textSize="7.4pt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.212" />
+
+    <TextView
+        android:id="@+id/paragraph2"
+        android:layout_width="315dp"
+        android:layout_height="147dp"
+        android:fontFamily="@font/inria_serif"
+        android:gravity="center"
+        android:text="Whether you're cravings in Fast food meals, or the specialties only your neighborhood can offer, Hungry Me is here to deliver literally! We're not just about convenience; we’re about celebrating the diverse and authentic culinary experiences found right where you live."
+        android:textColor="@color/black"
+        android:textSize="7.4pt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.422" />
+
+    <TextView
+        android:id="@+id/paragraph3"
+        android:layout_width="314dp"
+        android:layout_height="104dp"
+        android:fontFamily="@font/inria_serif"
+        android:gravity="center"
+        android:text="With a user friendly app and speedy service, Hungry Me ensures every meal is satisfying not just for your taste buds but also for supporting local businesses. We're redefining the food delivery scene, one delicious bite at a time."
+        android:textColor="@color/black"
+        android:textSize="7.4pt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.602" />
+
+    <TextView
+        android:id="@+id/paragraph4"
+        android:layout_width="308dp"
+        android:layout_height="73dp"
+        android:fontFamily="@font/inria_serif"
+        android:gravity="center"
+        android:text="Join us as we transform the way you discover and enjoy food, with Hungry Me at your service. Your hunger is our passion!"
+        android:textColor="@color/black"
+        android:textSize="7.4pt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.446"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.732" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

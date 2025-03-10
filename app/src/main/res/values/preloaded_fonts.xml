@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/abeezee</item>
+        <item>@font/abeezee_italic</item>
+        <item>@font/average_sans</item>
+        <item>@font/averia_sans_libre</item>
+        <item>@font/inder</item>
+        <item>@font/inria_sans</item>
+        <item>@font/inria_sans2</item>
+        <item>@font/inria_serif</item>
+        <item>@font/inria_serif_light</item>
+        <item>@font/inter_bold</item>
+        <item>@font/inter_medium</item>
+        <item>@font/inter_thin</item>
+        <item>@font/irish_grover</item>
+        <item>@font/kavoon</item>
+        <item>@font/langar</item>
+        <item>@font/montserrat</item>
+        <item>@font/montserrat_medium</item>
+        <item>@font/montserrat_semibold</item>
+        <item>@font/nunito</item>
+        <item>@font/poppins_medium</item>
+        <item>@font/poppins_semibold</item>
+    </array>
+</resources>

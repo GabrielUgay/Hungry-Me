@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity11">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#202020"
+        android:padding="0dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="0dp"
+            tools:ignore="InvalidId">
+
+            <ImageView
+                android:id="@+id/backPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back2"
+                android:layout_marginTop="17dp"
+                android:layout_marginLeft="7dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/inria_serif"
+                android:text="Select Order"
+                android:textColor="@color/white"
+                android:textSize="15pt"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="539dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/laser" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:columnCount="2"
+                android:padding="5dp"
+                android:rowCount="3">
+
+                <!-- First Item -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/black2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_marginTop="0dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="1.2"
+                        android:layout_gravity="center"
+                        android:src="@drawable/pizza_combo_meal_c" />
+
+                    <TextView
+                        android:layout_width="175dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/inria_sans"
+                        android:text="Pizza Combo Meal C w/ Regular Drink ₱111.00"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp">
+
+                        <!-- Subtract Button -->
+                        <ImageView
+                            android:id="@+id/subtract1"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/subtract" />
+
+                        <!-- FrameLayout for Image + Text -->
+                        <FrameLayout
+                            android:layout_width="20dp"
+                            android:layout_height="20dp">
+
+                            <!-- Amount Image -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/amount" />
+
+                            <!-- Text Over Image -->
+                            <TextView
+                                android:id="@+id/value1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <!-- Add Button -->
+                        <ImageView
+                            android:id="@+id/add1"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/add" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <!-- First Item -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/black2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/winner_wings_barbeque" />
+
+                    <TextView
+                        android:layout_width="175dp"
+                        android:layout_height="53dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/inria_sans"
+                        android:text="2 pcs Winner Wings Barbecue Value Meal w/ Drink ₱111.00"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp">
+
+                        <!-- Subtract Button -->
+                        <ImageView
+                            android:id="@+id/subtract2"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/subtract" />
+
+                        <!-- FrameLayout for Image + Text -->
+                        <FrameLayout
+                            android:layout_width="20dp"
+                            android:layout_height="20dp">
+
+                            <!-- Amount Image -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/amount" />
+
+                            <!-- Text Over Image -->
+                            <TextView
+                                android:id="@+id/value2"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <!-- Add Button -->
+                        <ImageView
+                            android:id="@+id/add2"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/add" />
+
+                    </LinearLayout>
+
+
+                    <!-- I want three small buttons here going horizontally but not taking full width -->
+
+                </LinearLayout>
+
+                <!-- Buttons Section -->
+
+                <!-- Duplicate the above structure for more items -->
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:columnCount="2"
+                android:padding="5dp"
+                android:rowCount="3">
+
+                <!-- First Item -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/black2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/hawaiian_overload_2" />
+
+                    <TextView
+                        android:layout_width="165dp"
+                        android:layout_height="56dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/inria_sans"
+                        android:text="Hawaiian Overload Pizzawrap Value Meal w/ Drink ₱122.00"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp">
+
+                        <!-- Subtract Button -->
+                        <ImageView
+                            android:id="@+id/subtract3"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/subtract" />
+
+                        <!-- FrameLayout for Image + Text -->
+                        <FrameLayout
+                            android:layout_width="20dp"
+                            android:layout_height="20dp">
+
+                            <!-- Amount Image -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/amount" />
+
+                            <!-- Text Over Image -->
+                            <TextView
+                                android:id="@+id/value3"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <!-- Add Button -->
+                        <ImageView
+                            android:id="@+id/add3"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/add" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <!-- First Item -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/black2"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/snack_plate_lasagna_supreme" />
+
+                    <TextView
+                        android:layout_width="141dp"
+                        android:layout_height="53dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/inria_sans"
+                        android:text="Snack Plate Lasagna Supreme Solo ₱100.00"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp">
+
+                        <!-- Subtract Button -->
+                        <ImageView
+                            android:id="@+id/subtract4"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/subtract" />
+
+                        <!-- FrameLayout for Image + Text -->
+                        <FrameLayout
+                            android:layout_width="20dp"
+                            android:layout_height="20dp">
+
+                            <!-- Amount Image -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/amount" />
+
+                            <!-- Text Over Image -->
+                            <TextView
+                                android:id="@+id/value4"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                        </FrameLayout>
+
+                        <!-- Add Button -->
+                        <ImageView
+                            android:id="@+id/add4"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/add" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Buttons Section -->
+
+                <!-- Duplicate the above structure for more items -->
+            </GridLayout>
+
+            <!-- First Item -->
+            <LinearLayout
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="center"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/black2"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/hawaiian_overload" />
+
+                <TextView
+                    android:layout_width="133dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/inria_sans"
+                    android:text="Hawaiian Overload ₱162.00"
+                    android:textColor="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
+
+                    <!-- Subtract Button -->
+                    <ImageView
+                        android:id="@+id/subtract5"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/subtract" />
+
+                    <!-- FrameLayout for Image + Text -->
+                    <FrameLayout
+                        android:layout_width="20dp"
+                        android:layout_height="20dp">
+
+                        <!-- Amount Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/amount" />
+
+                        <!-- Text Over Image -->
+                        <TextView
+                            android:id="@+id/value5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </FrameLayout>
+
+                    <!-- Add Button -->
+                    <ImageView
+                        android:id="@+id/add5"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/add" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="539dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/laser" />
+
+
+            <Button
+                android:id="@+id/checkOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textFontWeight="700"
+                android:textColor="@color/white"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:backgroundTint="#71B1A1"
+                android:drawableLeft="@drawable/cart2"
+                android:fontFamily="@font/nunito"
+                android:text="Check Out" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <FrameLayout
+        android:layout_marginTop="400dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/checkOrder"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/pushDown"
+            android:layout_width="match_parent"
+            android:layout_height="540dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/white_rectangle_long" />
+
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="5dp"
+            android:src="@drawable/silver_line"
+            android:layout_gravity="center"
+            android:layout_marginTop="-155dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="-120dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Food Selected"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:layout_marginStart="30dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Complete this stamps to get free meal"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="28dp">
+
+            <ImageView
+                android:id="@+id/box1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="58dp">
+
+            <ImageView
+                android:id="@+id/box2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="2"
+                android:textColor="#71B1A1"
+                android:textSize="12sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="88dp">
+
+            <ImageView
+                android:id="@+id/box3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="118dp">
+
+            <ImageView
+                android:id="@+id/box4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="148dp">
+
+            <ImageView
+                android:id="@+id/box5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="178dp">
+
+            <ImageView
+                android:id="@+id/box6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="208dp">
+
+            <ImageView
+                android:id="@+id/box7"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="238dp">
+
+            <ImageView
+                android:id="@+id/box8"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="268dp">
+
+            <ImageView
+                android:id="@+id/box9"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="9"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginStart="298dp">
+
+            <ImageView
+                android:id="@+id/box10"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/white_comp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10"
+                android:textSize="12sp"
+                android:textColor="#71B1A1"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="155dp"
+            android:layout_marginStart="30dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Price"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="180dp"
+            android:layout_marginStart="30dp">
+
+            <ImageView
+                android:layout_width="79dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/price2" />
+
+            <TextView
+                android:id="@+id/total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:fontFamily="@font/poppins_medium"
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp"
+                android:text="₱ 0.00"
+                android:textColor="#71B1A1"
+                android:textFontWeight="800"
+                android:textSize="9sp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/foodSelectionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:fontFamily="@font/poppins_medium"
+            android:paddingLeft="30dp"
+            android:layout_marginTop="212dp"
+            android:text="Food Selection"
+            android:textColor="@color/black"
+            android:textFontWeight="800"
+            android:textSize="11sp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_marginTop="80dp"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal">
+
+            <LinearLayout
+                android:id="@+id/foodSelectionLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/foodSelectionTextView"
+                android:paddingTop="160dp"
+                android:paddingLeft="28dp">
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+
+        <ImageView
+            android:id="@+id/addCart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/add_to_cart"
+            android:layout_marginTop="300dp"
+            android:layout_marginLeft="105dp" />
+
+    </FrameLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
