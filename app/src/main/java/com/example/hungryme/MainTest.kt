@@ -70,7 +70,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         }
     }
 
-
+    //asdf
     private fun fetchUserId(username: String, callback: (Int) -> Unit) {
         val url = "${Constants.URL_GET_USER_ID}?username=$username"
         Log.d("DEBUG", "Fetching user ID from: $url")
