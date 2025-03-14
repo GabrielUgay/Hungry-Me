@@ -1,5 +1,6 @@
 package com.example.hungryme
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,7 +37,7 @@ class ItemAdapter(
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = itemList[position]
-        holder.price.text = "₱${item.price}0"
+        holder.price.text = item.restaurant
         holder.name.text = item.name
 
         val quantity = cartItems.find { it.getString("name") == item.name }?.getInt("quantity") ?: 0
@@ -71,7 +72,20 @@ class ItemAdapter(
             Log.e("ItemAdapter", "Image not found: ${item.file}, using fallback.", e)
             holder.image.setImageResource(R.drawable.pork)
         }
+
+        // **Navigate to next activity when clicked**
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, ItemActivity::class.java) // Change NextActivity to your actual target
+            intent.putExtra("item_id", item.id)
+            intent.putExtra("item_name", item.name)
+            intent.putExtra("item_price", item.price)
+            intent.putExtra("item_stock", item.stock)
+            intent.putExtra("item_category", item.category)
+            intent.putExtra("item_file", item.file)
+            holder.itemView.context.startActivity(intent)
+        }
     }
+
 
     override fun getItemCount() = itemList.size
 

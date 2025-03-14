@@ -10,7 +10,7 @@ tools:context=".MainActivity9">
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#202020"
+    android:background="@color/white"
     android:padding="0dp"
     >
 
@@ -21,40 +21,124 @@ tools:context=".MainActivity9">
         android:padding="0dp"
         tools:ignore="InvalidId">
 
-        <ImageView
-            android:id="@+id/backPage"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/back2"
-            android:layout_marginTop="17dp"
-            android:layout_marginLeft="7dp" />
+            android:orientation="horizontal"
+            android:padding="0dp"
+            tools:ignore="InvalidId">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lobster"
+                android:text="Hungry Me"
+                android:textColor="@color/black"
+                android:textSize="18pt"
+                android:padding="15dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/inria_serif"
-            android:text="Select Order"
-            android:textColor="@color/white"
-            android:textSize="15pt"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppins_medium"
+            android:text="Order your favourite food"
+            android:textColor="#6A6A6A"
+            android:layout_marginTop="-18dp"
+            android:paddingLeft="19dp"
+            android:textSize="8pt" />
 
-        <ImageView
-            android:layout_width="539dp"
-            android:layout_height="21dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/laser" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="0dp"
+            tools:ignore="InvalidId">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rec67"
+                android:drawableStart="@drawable/search"
+                android:paddingStart="42dp"
+                android:drawablePadding="12dp"
+                android:textColor="#202020"
+                android:hint="Search"
+                android:gravity="center_vertical"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:layout_marginTop="-3dp"
+                android:src="@drawable/group3"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:layout_width="90dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="7.5dp"
+                    android:text="All"
+                    android:backgroundTint="#47DD1E"
+                    android:textColor="#FFFFFF"
+                    android:elevation="16dp"
+                    android:outlineProvider="bounds"
+                    android:clipToOutline="false"/>
+
+
+
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="7.5dp"
+                    android:text="Combos"
+                    android:backgroundTint="#F3F4F6"
+                    android:textColor="#6A6A6A"/>
+
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="7.5dp"
+                    android:text="Sliders"
+                    android:backgroundTint="#F3F4F6"
+                    android:textColor="#6A6A6A" />
+
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="7.5dp"
+                    android:text="Classic"
+                    android:backgroundTint="#F3F4F6"
+                    android:textColor="#6A6A6A" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
-        <ImageView
-            android:layout_width="539dp"
-            android:layout_height="21dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/laser" />
 
 
         <Button

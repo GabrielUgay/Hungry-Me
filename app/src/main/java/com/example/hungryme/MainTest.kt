@@ -35,7 +35,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private lateinit var checkOrder: FrameLayout
     private lateinit var checkOut: Button
 
-    private lateinit var backPage: ImageView
     private lateinit var addCart: ImageView
 
     private lateinit var pushDown: ImageView
@@ -49,7 +48,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         val totalPrice = itemCounts.indices.sumOf { itemCounts[it] * itemPrices[it] }
         findViewById<TextView>(R.id.total).text = "₱$totalPrice" + "0"
     }
-
 
 
     private fun updateFoodSelection(index: Int, newValue: Int) {
@@ -109,7 +107,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
 
 
-
     private fun fetchStamps(userId: Int, restaurant: String) {
         val url = "${Constants.URL_GET_STAMPS}?user_id=$userId&restaurant=$restaurant"
         Log.d("DEBUG", "Fetching stamp count from: $url")
@@ -143,7 +140,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
 
 
-
     private fun updateStampBoxes(stampCount: Int) {
         Log.d("DEBUG", "Updating UI with stamp count: $stampCount")
 
@@ -170,10 +166,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             }
         }
     }
-
-
-
-
 
 
     override fun onQuantityChanged(position: Int, quantity: Int) {
@@ -210,7 +202,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         checkOrder = findViewById(R.id.checkOrder)
         checkOut = findViewById(R.id.checkOut)
         pushDown = findViewById(R.id.pushDown)
-        backPage = findViewById(R.id.backPage)
 
         addCart = findViewById(R.id.addCart)
 
@@ -271,13 +262,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
         pushDown.setOnClickListener {
             toggleOrderView(false)
-        }
-
-        backPage.setOnClickListener {
-            val user = intent.getStringExtra("user")
-            val intent = Intent(this, MainActivity7::class.java)
-            intent.putExtra("user", user)
-            startActivity(intent)
         }
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -419,7 +403,4 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
         requestQueue.add(jsonObjectRequest)
     }
-
-
-
 }

@@ -16,11 +16,15 @@
         <item>@font/irish_grover</item>
         <item>@font/kavoon</item>
         <item>@font/langar</item>
+        <item>@font/lobster</item>
         <item>@font/montserrat</item>
         <item>@font/montserrat_medium</item>
         <item>@font/montserrat_semibold</item>
         <item>@font/nunito</item>
         <item>@font/poppins_medium</item>
         <item>@font/poppins_semibold</item>
+        <item>@font/roboto</item>
+        <item>@font/roboto_bold</item>
+        <item>@font/roboto_medium</item>
     </array>
 </resources>

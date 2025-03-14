@@ -49,7 +49,7 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
 
         // val restaurant = intent.getStringExtra("restaurant") ?: "" -- this is already here, no need to declare this again
 
-        // MainActivity13.kt proceedToCheckOut.setOnClickListener { ... }
+        // This is MainActivity13.kt, serve this as a guide for ItemActivity.kt
         findViewById<FrameLayout>(R.id.proceedToCheckOut).setOnClickListener {
             if (totalPrice <= 0) {
                 Toast.makeText(this, "Cart is empty.", Toast.LENGTH_SHORT).show()

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="0dp">
 
     <GridLayout
         android:layout_width="match_parent"
@@ -13,32 +13,32 @@
 
         <!-- Single Item Template (Will Repeat Dynamically in Code) -->
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="250dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="0dp"
-            android:background="@drawable/black2"
-            android:padding="10dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/rect60"
+            android:padding="20dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/imageItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="80dp"
+                    android:layout_height="70dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/pork" />
 
                 <TextView
                     android:id="@+id/itemName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
+                    android:gravity="center"
                     android:text="Item Name"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -47,38 +47,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:layout_gravity="left"
                     android:text="₱100"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="0dp"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp">
 
-                    <!-- Subtract Button -->
                     <ImageView
                         android:id="@+id/subtract1"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/subtract" />
 
-                    <!-- FrameLayout for Image + Text -->
                     <FrameLayout
-                        android:layout_width="20dp"
-                        android:layout_height="20dp">
+                        android:layout_width="35dp"
+                        android:layout_height="35dp">
 
-                        <!-- Amount Image -->
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/amount" />
 
-                        <!-- Text Over Image -->
                         <TextView
                             android:id="@+id/value1"
                             android:layout_width="match_parent"
@@ -86,16 +81,16 @@
                             android:gravity="center"
                             android:text="0"
                             android:textColor="@color/black"
-                            android:textSize="12sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                     </FrameLayout>
 
-                    <!-- Add Button -->
                     <ImageView
                         android:id="@+id/add1"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_marginLeft="5dp"
                         android:src="@drawable/add" />
 
                 </LinearLayout>
