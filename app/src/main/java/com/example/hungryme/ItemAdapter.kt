@@ -18,7 +18,8 @@ interface OnItemQuantityChangeListener {
 class ItemAdapter(
     private val itemList: List<Item>,
     private val cartItems: MutableList<Bundle>,
-    private val quantityChangeListener: OnItemQuantityChangeListener
+    private val quantityChangeListener: OnItemQuantityChangeListener,
+    private val user: String?
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,7 +38,7 @@ class ItemAdapter(
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = itemList[position]
-        holder.price.text = item.restaurant
+        holder.price.text = item.category
         holder.name.text = item.name
 
         val quantity = cartItems.find { it.getString("name") == item.name }?.getInt("quantity") ?: 0
@@ -78,10 +79,13 @@ class ItemAdapter(
             val intent = Intent(holder.itemView.context, ItemActivity::class.java) // Change NextActivity to your actual target
             intent.putExtra("item_id", item.id)
             intent.putExtra("item_name", item.name)
-            intent.putExtra("item_price", item.price)
+            intent.putExtra("item_price", item.price) // Assuming price is a Double/Float
+            Log.d("ItemAdapter", "Passing item price: ${item.price}")
             intent.putExtra("item_stock", item.stock)
             intent.putExtra("item_category", item.category)
             intent.putExtra("item_file", item.file)
+            intent.putExtra("item_restaurant", item.restaurant)
+            intent.putExtra("user", user)
             holder.itemView.context.startActivity(intent)
         }
     }

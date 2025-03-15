@@ -151,12 +151,13 @@
                 android:fontFamily="@font/roboto_bold"
                 android:layout_marginTop="40dp"
                 android:text="Php 0.00"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="17dp" />
 
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/addToCart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -172,7 +173,7 @@
                 android:layout_marginStart="3dp"
                 android:fontFamily="@font/roboto_bold"
                 android:layout_marginTop="46dp"
-                android:text="ORDER NOW"
+                android:text="ADD TO CART"
                 android:textColor="@color/white"
                 android:textSize="17dp" />
 

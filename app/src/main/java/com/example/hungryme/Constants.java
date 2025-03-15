@@ -15,4 +15,5 @@ public class Constants {
     public static final String URL_ADD_RECEIPT = ROOT_URL + "addToReceipts.php";
     public static final String URL_UPDATE_STOCK = ROOT_URL + "updateStock.php";
     public static final String URL_GET_STAMPS = ROOT_URL + "getStamps.php";
+    public static final String URL_FETCH_ITEMS_BY_CATEGORY = ROOT_URL + "fetch_items_by_category.php";
 }

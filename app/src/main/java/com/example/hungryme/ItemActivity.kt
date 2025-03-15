@@ -1,52 +1,144 @@
 package com.example.hungryme
 
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import android.util.Log
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.android.volley.*
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import org.json.JSONObject
 
 class ItemActivity : AppCompatActivity() {
+
+    private lateinit var requestQueue: RequestQueue
+    private var userId: Int? = null
+    private var numberItems = 0
+    private var pricePerItem = 0.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_item)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        // What i want is that after clicking each item, you will go to this page and then the user will see the item in a larger image
-        val imageFile = findViewById<ImageView>(R.id.imageFile)
+        requestQueue = Volley.newRequestQueue(this)
+
+        val user = intent.getStringExtra("user")
         val itemName = findViewById<TextView>(R.id.itemName)
         val itemDesc = findViewById<TextView>(R.id.itemDesc)
-
+        val imageFile = findViewById<ImageView>(R.id.imageFile)
+        val portion = findViewById<TextView>(R.id.portion)
+        val totalPrice = findViewById<TextView>(R.id.totalPrice)
         val minusGreen = findViewById<ImageView>(R.id.minusGreen)
         val plusGreen = findViewById<ImageView>(R.id.plusGreen)
-        val portion = findViewById<TextView>(R.id.portion)
+        val addToCart = findViewById<FrameLayout>(R.id.addToCart)
+        val backButton = findViewById<ImageView>(R.id.backButton)
 
-        val totalPrice = findViewById<TextView>(R.id.totalPrice)
-        var numberItems = 0
+        val itemId = intent.getIntExtra("item_id", 0)
+        val itemFile = intent.getStringExtra("item_file")
+        val restaurant = intent.getStringExtra("item_restaurant") ?: ""
+        pricePerItem = intent.getDoubleExtra("item_price", 0.0)
 
-        itemName.text = intent.getStringExtra("item_name")
-        val imageResId = resources.getIdentifier(intent.getStringExtra("item_file"), "drawable", packageName)
-        imageFile.setImageResource(imageResId)
+        itemName.text = intent.getStringExtra("item_name") ?: "Unknown Item"
+        itemDesc.text = intent.getStringExtra("item_desc") ?: "No description available."
 
+        imageFile.setImageResource(resources.getIdentifier(itemFile, "drawable", packageName))
+
+        updatePrice(portion, totalPrice)
 
         minusGreen.setOnClickListener {
             if (numberItems > 0) {
                 numberItems--
-                portion.text = numberItems.toString()
+                updatePrice(portion, totalPrice)
             }
         }
+
         plusGreen.setOnClickListener {
             if (numberItems < 10) {
                 numberItems++
-                portion.text = numberItems.toString()
+                updatePrice(portion, totalPrice)
             }
         }
+
+        addToCart.setOnClickListener {
+            if (userId == null) {
+                Log.e("ItemActivity", "User ID is null. Cannot add to cart.")
+                Toast.makeText(this, "User not identified. Please log in.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (numberItems <= 0) {
+                Toast.makeText(this, "Quantity must be greater than 0.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            addToCart(userId!!, itemId, numberItems, restaurant)
+        }
+
+        backButton.setOnClickListener { finish() }
+
+        user?.let { getUserId(it) }
+    }
+
+    private fun getUserId(username: String) {
+        val url = "${Constants.URL_GET_USER_ID}?username=$username"
+        Log.d("ItemActivity", "Fetching User ID from: $url")
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    val jsonResponse = JSONObject(response)
+                    if (jsonResponse.getBoolean("success")) {
+                        userId = jsonResponse.getInt("user_id")
+                        Log.d("ItemActivity", "User ID fetched successfully: $userId")
+                    } else {
+                        Log.e("ItemActivity", "Failed to fetch user ID: ${jsonResponse.getString("message")}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("ItemActivity", "JSON Parsing Error: ${e.message}")
+                }
+            },
+            { error -> Log.e("ItemActivity", "Volley Error: ${error.message}") })
+
+        requestQueue.add(stringRequest)
+    }
+
+    private fun updatePrice(portion: TextView, totalPrice: TextView) {
+        val total = numberItems * pricePerItem
+        portion.text = numberItems.toString()
+        totalPrice.text = "₱${String.format("%.2f", total)}"
+    }
+
+    private fun addToCart(userId: Int, productId: Int, quantity: Int, restaurant: String) {
+        val url = Constants.URL_ADD_CART
+        Log.d("ItemActivity", "Adding to cart: UserID=$userId, ProductID=$productId, Quantity=$quantity, Restaurant=$restaurant")
+
+        val stringRequest = object : StringRequest(Request.Method.POST, url,
+            { response ->
+                try {
+                    val jsonResponse = JSONObject(response)
+                    if (jsonResponse.getBoolean("success")) {
+                        Log.d("ItemActivity", "Item successfully added to cart.")
+                        Toast.makeText(this, "Item added to cart.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Log.e("ItemActivity", "Failed to add item: ${jsonResponse.getString("message")}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("ItemActivity", "JSON Parsing Error: ${e.message}")
+                }
+            },
+            { error ->
+                Log.e("ItemActivity", "Volley Error: ${error.message}")
+            }) {
+            override fun getParams(): MutableMap<String, String> {
+                return hashMapOf(
+                    "user_id" to userId.toString(),
+                    "product_id" to productId.toString(),
+                    "quantity" to quantity.toString(),
+                    "restaurant" to restaurant
+                )
+            }
+        }
+
+        requestQueue.add(stringRequest)
     }
 }

@@ -62,7 +62,7 @@ class MainActivity7 : AppCompatActivity() {
         jollibee.setOnClickListener { goToPageTen() }
         greenwichLinearLayout.setOnClickListener { goToPageEleven() }
 
-        mangInasalCart.setOnClickListener { goToCartPage("Mang Inasal") }
+        mangInasalCart.setOnClickListener { goToCartPage("Kainan ni Mang Peping") }
         jollibeeCart.setOnClickListener { goToCartPage("Jollibee") }
         greenwichCart.setOnClickListener { goToCartPage("Greenwich") }
 
@@ -124,7 +124,7 @@ class MainActivity7 : AppCompatActivity() {
     private fun goToPageNine() {
         val user = intent.getStringExtra("user")
         val intent = Intent(this, MainTest::class.java)
-        intent.putExtra("restaurant", "Mang Inasal")
+        intent.putExtra("restaurant", "Kainan ni Mang Peping")
         intent.putExtra("user", user)
         startActivity(intent)
     }
