@@ -17,18 +17,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:background="@drawable/rect60"
-            android:padding="20dp">
+            android:padding="30dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/imageItem"
-                    android:layout_width="80dp"
+                    android:layout_width="match_parent"
                     android:layout_height="70dp"
+                    android:layout_gravity="center"
                     android:scaleType="centerCrop"
                     android:src="@drawable/pork" />
 
@@ -36,26 +36,27 @@
                     android:id="@+id/itemName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="left"
                     android:text="Item Name"
+                    android:layout_marginTop="5dp"
                     android:textColor="@color/black"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/itemPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
                     android:text="₱100"
                     android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:gravity="center"/>
+                    android:textSize="12sp"
+                    android:gravity="left"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:visibility="invisible"
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp">
 
@@ -96,6 +97,14 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/favoriteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="130dp"
+                android:src="@drawable/heart" />
 
         </FrameLayout>
 

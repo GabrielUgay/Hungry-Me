@@ -7,5 +7,6 @@ data class Item(
     val stock: Int,
     val category: String,
     val restaurant: String,
-    val file: String
+    val file: String,
+    var isFavorite: Boolean = false
 )

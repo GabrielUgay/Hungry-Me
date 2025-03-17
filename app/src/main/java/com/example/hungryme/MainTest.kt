@@ -2,11 +2,14 @@ package com.example.hungryme
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -27,7 +30,7 @@ import org.json.JSONException
 class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private var lastSelectedButton: Button? = null // Store last clicked button
     private var lastSelectedCategory: String? = "All"
-
+    private lateinit var searchBar: EditText
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
@@ -48,6 +51,25 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private var itemCounts = mutableListOf<Int>()
 
 
+    private fun filterItems(query: String) {
+        filteredItemList.clear()
+
+        if (query.isEmpty()) {
+            filteredItemList.addAll(itemList) // Show all items if query is empty
+        } else {
+            val lowerCaseQuery = query.lowercase()
+            for (item in itemList) {
+                if (item.name.lowercase().startsWith(lowerCaseQuery)) {
+                    filteredItemList.add(item)
+                }
+            }
+        }
+
+        itemAdapter.notifyDataSetChanged() // Refresh the RecyclerView
+    }
+
+
+
     private fun updateTotalPrice() {
         val totalPrice = itemCounts.indices.sumOf { itemCounts[it] * itemPrices[it] }
         findViewById<TextView>(R.id.total).text = "₱$totalPrice" + "0"
@@ -65,50 +87,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     }
 
 
-
-    private fun animateTransition(selectedCategory: String) {
-        val container: View = findViewById(R.id.recyclerView) // Change to your actual container ID
-
-        if (lastSelectedCategory == null) {
-            // First selection, no animation needed
-            lastSelectedCategory = selectedCategory
-            return
-        }
-
-        val animResource = when {
-            lastSelectedCategory == selectedCategory -> return // No change, don't animate
-            categoryOrder(selectedCategory) > categoryOrder(lastSelectedCategory!!) -> R.anim.slide_to_right
-            else -> R.anim.slide_to_left
-        }
-
-        val animation = AnimationUtils.loadAnimation(this, animResource)
-        container.startAnimation(animation)
-
-        // Update last selected category
-        lastSelectedCategory = selectedCategory
-    }
-
-
-
-    private fun animateRecyclerView(newButton: Button) {
-        val animation = when {
-            lastSelectedButton == null -> null // No animation for first time
-            lastSelectedButton == all && newButton != all -> AnimationUtils.loadAnimation(this, R.anim.slide_to_right)
-            lastSelectedButton != null && newButton == all -> AnimationUtils.loadAnimation(this, R.anim.slide_to_left)
-            lastSelectedButton == dish && newButton == drinks -> AnimationUtils.loadAnimation(this, R.anim.slide_to_right)
-            lastSelectedButton == drinks && newButton == desserts -> AnimationUtils.loadAnimation(this, R.anim.slide_to_right)
-            lastSelectedButton == desserts && newButton == drinks -> AnimationUtils.loadAnimation(this, R.anim.slide_to_left)
-            lastSelectedButton == drinks && newButton == dish -> AnimationUtils.loadAnimation(this, R.anim.slide_to_left)
-            lastSelectedButton == desserts && newButton == dish -> AnimationUtils.loadAnimation(this, R.anim.slide_to_left)
-            else -> null
-        }
-
-        animation?.let {
-            recyclerView.startAnimation(it) // Apply animation
-        }
-
-        lastSelectedButton = newButton // Update last button clicked
-    }
 
 
     private fun updateFoodSelection(index: Int, newValue: Int) {
@@ -181,10 +159,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         desserts.setTextColor(Color.parseColor("#202020"))
     }
 
-    // If the user clicks the all button, the all button stays green while the dish, drinks, and desserts are #F3F4F6
-    // If the user clicks the dish button, it will only display the items with a category of dish
-    // If the user clicks the drinks button, it will only display the items with a category of drinks
-    // And if the user clicks the desserts button, it will only display the items with a category of desserts
+
     private fun fetchStamps(userId: Int, restaurant: String) {
         val url = "${Constants.URL_GET_STAMPS}?user_id=$userId&restaurant=$restaurant"
         Log.d("DEBUG", "Fetching stamp count from: $url")
@@ -271,7 +246,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                         itemList.clear()
                         itemPrices.clear()
                         itemCounts.clear()
-                        filteredItemList.clear()
+                        filteredItemList.clear() // Make sure it's reset!
 
                         for (i in 0 until jsonArray.length()) {
                             val jsonObject = jsonArray.getJSONObject(i)
@@ -290,7 +265,10 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                         }
 
                         val user = intent.getStringExtra("user")
-                        itemAdapter = ItemAdapter(itemList, mutableListOf(), this, user)
+
+                        // ✅ Update filteredItemList to match itemList (just like in fetchItems)
+                        filteredItemList.addAll(itemList)
+                        itemAdapter = ItemAdapter(filteredItemList, mutableListOf(), this, user)
                         recyclerView.adapter = itemAdapter
 
                     } else {
@@ -308,6 +286,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
         requestQueue.add(jsonObjectRequest)
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -329,11 +308,19 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         drinks = findViewById(R.id.drinks)
         desserts = findViewById(R.id.desserts)
 
-        // GOAL:
-        // all - SELECT * FROM products WHERE restaurant = ? - this fetchItems() will work if you click this all button
-        // dish = SELECT * FROM products WHERE restaurant = ? and category = 'Dish'
-        // drinks = SELECT * FROM products WHERE restaurant = ? and category = 'Drinks'
-        // desserts = SELECT * FROM products WHERE restaurant = ? and category = 'Desserts'
+
+        searchBar = findViewById(R.id.searchBar)
+
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterItems(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
 
         all.setOnClickListener {
             animateCategoryChange("All", all)
@@ -378,32 +365,10 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
 
+        // I do have fetchItems() and fetchItemsByCategory()
         fetchItems(restaurant)
 
     }
-
-
-    private fun animateButton(button: Button) {
-        // Scale up animation
-        button.animate()
-            .scaleX(1.1f)
-            .scaleY(1.1f)
-            .setDuration(100)
-            .withEndAction {
-                // Scale back down
-                button.animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(100)
-                    .start()
-            }
-            .start()
-
-        // Change color smoothly
-        button.setBackgroundColor(Color.parseColor("#1EBF39")) // Green color
-        button.setTextColor(Color.WHITE)
-    }
-
 
 
     private fun fetchItems(restaurantName: String) {
@@ -498,6 +463,4 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         // Update last selected category
         lastSelectedCategory = newCategory
     }
-
-
 }

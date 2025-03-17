@@ -57,6 +57,7 @@ tools:context=".MainActivity9">
             tools:ignore="InvalidId">
 
             <EditText
+                android:id="@+id/searchBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
