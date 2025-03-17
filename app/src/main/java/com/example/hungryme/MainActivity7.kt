@@ -132,7 +132,7 @@ class MainActivity7 : AppCompatActivity() {
     private fun goToPageTen() {
         val user = intent.getStringExtra("user")
         val intent = Intent(this, MainTest::class.java)
-        intent.putExtra("restaurant", "Jollibee")
+        intent.putExtra("restaurant", "Matutina")
         intent.putExtra("user", user)
         startActivity(intent)
     }
@@ -140,7 +140,7 @@ class MainActivity7 : AppCompatActivity() {
     private fun goToPageEleven() {
         val user = intent.getStringExtra("user")
         val intent = Intent(this, MainTest::class.java)
-        intent.putExtra("restaurant", "Greenwich")
+        intent.putExtra("restaurant", "Cuidad Elmina")
         intent.putExtra("user", user)
         startActivity(intent)
     }
