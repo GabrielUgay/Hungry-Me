@@ -62,8 +62,8 @@ class MainActivity7 : AppCompatActivity() {
         greenwichLinearLayout.setOnClickListener { goToPageEleven() }
 
         mangInasalCart.setOnClickListener { goToCartPage("Kainan ni Mang Peping") }
-        jollibeeCart.setOnClickListener { goToCartPage("Jollibee") }
-        greenwichCart.setOnClickListener { goToCartPage("Greenwich") }
+        jollibeeCart.setOnClickListener { goToCartPage("Matutina") }
+        greenwichCart.setOnClickListener { goToCartPage("Cuidad Elmina") }
 
     }
 
