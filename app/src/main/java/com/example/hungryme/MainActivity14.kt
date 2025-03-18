@@ -83,7 +83,10 @@ class MainActivity14 : AppCompatActivity() {
                 .setTitle("Leave This Page?")
                 .setMessage("Are you sure you want to leave? Any progress will be lost.")
                 .setPositiveButton("Yes") { _, _ ->
-                    startActivity(Intent(this, MainActivity2::class.java))
+                    val intent = Intent(this, MainActivity2::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
                 }
                 .setNegativeButton("No", null)
                 .show()

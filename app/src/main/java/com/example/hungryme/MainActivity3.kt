@@ -72,8 +72,7 @@ class MainActivity3 : AppCompatActivity() {
     }
 
     private fun goToLoginPage() {
-        val intent = Intent(this, MainActivity2::class.java)
-        startActivity(intent)
+        finish()
     }
 
     private fun registerUser() {
@@ -130,6 +129,7 @@ class MainActivity3 : AppCompatActivity() {
             }
         }
 
+
         // If everything is valid, proceed with registration
         Log.d("RegisterDebug", "Sending Data: Username=$username, Email=$email, Password=$password, Phone=$phoneNumber")
 
@@ -148,7 +148,7 @@ class MainActivity3 : AppCompatActivity() {
                     val message = jsonObject.getString("message")
                     val error = jsonObject.getBoolean("error")
                     Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
-                    if (!error) { clearUserInputs() }
+                    if (!error) { clearUserInputs(); finish() }
                 }
                 catch (e: Exception) {
                     e.printStackTrace()

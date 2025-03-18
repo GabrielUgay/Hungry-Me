@@ -41,9 +41,11 @@ class MainActivity12 : AppCompatActivity() {
         homePage = findViewById(R.id.homePage)
         homePage.setOnClickListener {
             val user = intent.getStringExtra("user")
-            val intent = Intent(this, MainActivity5::class.java)
+            val intent = Intent(this, MainActivity7::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra("user", user)
             startActivity(intent)
+            finish()
         }
 
         // Get total price from Intent

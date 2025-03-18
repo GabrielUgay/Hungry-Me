@@ -23,7 +23,9 @@ class MainActivity17 : AppCompatActivity() {
         backToLoginPage = findViewById(R.id.backToLoginPage)
         backToLoginPage.setOnClickListener {
             val intent = Intent(this, MainActivity2::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
+            finish()
         }
     }
 }

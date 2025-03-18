@@ -96,7 +96,7 @@ class MainActivity4 : AppCompatActivity() {
     }
 
     private fun navigateToLogin() {
-        startActivity(Intent(this, MainActivity2::class.java))
+        finish()
     }
 
     private fun showToast(message: String) {

@@ -33,7 +33,9 @@ class MainActivity15 : AppCompatActivity() {
                 .setMessage("Are you sure you want to leave? Any progress will be lost.")
                 .setPositiveButton("Yes") { _, _ ->
                     val intent = Intent(this, MainActivity2::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
+                    finish()
                 }
                 .setNegativeButton("No", null) // Do nothing if "No" is clicked
                 .show()

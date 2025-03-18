@@ -19,7 +19,6 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class MainActivity7 : AppCompatActivity() {
-    lateinit var back : ImageView
     lateinit var mangInasal : LinearLayout
     lateinit var jollibee : LinearLayout
     lateinit var greenwichLinearLayout: LinearLayout
@@ -39,8 +38,6 @@ class MainActivity7 : AppCompatActivity() {
             insets
         }
 
-        back = findViewById(R.id.back)
-
         // Choose any restaurants here:
         mangInasal = findViewById(R.id.mangInasal)
         jollibee = findViewById(R.id.jollibee)
@@ -49,13 +46,6 @@ class MainActivity7 : AppCompatActivity() {
         mangInasalCart = findViewById(R.id.mangInasalCart)
         jollibeeCart = findViewById(R.id.jollibeeCart)
         greenwichCart = findViewById(R.id.greenwichCart)
-
-        back.setOnClickListener {
-            val user = intent.getStringExtra("user")
-            val intent = Intent(this, MainActivity5::class.java)
-            intent.putExtra("user", user)
-            startActivity(intent)
-        }
 
         mangInasal.setOnClickListener { goToPageNine() }
         jollibee.setOnClickListener { goToPageTen() }

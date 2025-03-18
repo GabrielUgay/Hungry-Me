@@ -39,7 +39,10 @@ class MainActivity16 : AppCompatActivity() {
                 .setTitle("Leave This Page?")
                 .setMessage("Are you sure you want to leave? Any progress will be lost.")
                 .setPositiveButton("Yes") { _, _ ->
-                    startActivity(Intent(this, MainActivity2::class.java))
+                    val intent = Intent(this, MainActivity2::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
                 }
                 .setNegativeButton("No", null)
                 .show()
@@ -55,7 +58,7 @@ class MainActivity16 : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val passwordRegex = Regex("^(?=.*[0-9])(?=.*[!@#\$%^&*(),.?\":{}|<>]).{6,}$")
+            val passwordRegex = Regex("^(?=.*[0-9])(?=.*[!@#\$%^_&*(),.?\":{}|<>]).{6,}$")
 
             if (!passwordRegex.matches(newPassword)) {
                 Toast.makeText(

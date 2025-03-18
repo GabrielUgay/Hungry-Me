@@ -11,76 +11,70 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        android:layout_marginTop="20dp"
         tools:context=".MainActivity7">
-
-        <ImageView
-            android:id="@+id/back"
-            android:layout_width="51dp"
-            android:layout_height="55dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.077"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.06"
-            app:srcCompat="@drawable/back2"
-            app:tint="@color/black"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_margin="20dp"
-            app:layout_constraintTop_toBottomOf="@id/back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose a Restaurant"
+                android:fontFamily="@font/abeezee_italic"
+                android:textColor="#202020"
+                android:textFontWeight="800"
+                android:textSize="25dp"
+                android:layout_margin="20dp"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content">
 
-
                 <LinearLayout
                     android:id="@+id/mangInasal"
-                    android:layout_width="260dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:background="@drawable/black_opacity"
+                    android:background="@drawable/group14"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
                     android:padding="0dp">
 
                     <ImageView
                         android:id="@+id/inasal"
-                        android:layout_width="347dp"
-                        android:layout_height="142dp"
-                        app:srcCompat="@drawable/inasal" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="122dp"
+                        android:layout_marginTop="20dp"
+                        app:srcCompat="@drawable/mang_peping" />
 
-                    <!-- #7EEFDE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="10dp"
-                        android:text="Mang Inasal"
-                        android:textSize="18dp"
-                        android:textColor="#7EEFDE"
-                        android:fontFamily="@font/inria_serif"
-                        />
+                        android:fontFamily="@font/inter_medium"
+                        android:text="Kainan ni Mang Peping"
+                        android:textColor="#202020"
+                        android:textSize="18dp" />
 
                     <!-- #7EEFDE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="@font/inder"
-                        android:text="Fastfood Chain"
-                        android:textColor="#7EEFDE"
+                        android:fontFamily="@font/inter_medium"
+                        android:text="Filipino Restaurant"
+                        android:textColor="#202020"
                         android:textSize="12dp" />
 
                 </LinearLayout>
@@ -123,44 +117,44 @@
 
                 <LinearLayout
                     android:id="@+id/jollibee"
-                    android:layout_width="260dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="20dp"
-                    android:background="@drawable/black_opacity"
+                    android:background="@drawable/group14"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
                     android:padding="0dp">
 
                     <ImageView
                         android:id="@+id/jolibee"
-                        android:layout_width="315dp"
+                        android:paddingHorizontal="30dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="142dp"
-                        app:srcCompat="@drawable/readibee" />
+                        app:srcCompat="@drawable/ciudad" />
 
                     <!-- #7EEFDE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="10dp"
-                        android:text="Jollibee"
-                        android:textSize="18dp"
-                        android:textColor="#7EEFDE"
-                        android:fontFamily="@font/inria_serif"
-                        />
+                        android:fontFamily="@font/inter_medium"
+                        android:text="Ciudad Elmina"
+                        android:textColor="#202020"
+                        android:textSize="18dp" />
 
                     <!-- #7EEFDE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="@font/inder"
-                        android:text="Fastfood Chain"
-                        android:textColor="#7EEFDE"
+                        android:fontFamily="@font/inter_medium"
+                        android:text="Fishing Village Resort &amp; Restaurant"
+                        android:textColor="#202020"
                         android:textSize="12dp" />
 
                 </LinearLayout>
@@ -202,45 +196,45 @@
 
                 <LinearLayout
                     android:id="@+id/greenwichLinearLayout"
-                    android:layout_width="260dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="50dp"
-                    android:background="@drawable/black_opacity"
+                    android:background="@drawable/group14"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
                     android:padding="0dp">
 
                     <ImageView
                         android:id="@+id/greenwich"
-                        android:layout_width="314dp"
-                        android:layout_height="140dp"
-                        app:srcCompat="@drawable/greenwich" />
+                        android:layout_width="234dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_height="120dp"
+                        app:srcCompat="@drawable/matutina" />
 
                     <!-- #7EEFDE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="10dp"
-                        android:text="Greenwich"
-                        android:textSize="18dp"
-                        android:textColor="#7EEFDE"
-                        android:fontFamily="@font/inria_serif"
-                        />
+                        android:fontFamily="@font/inter_medium"
+                        android:text="Matutina"
+                        android:textColor="#202020"
+                        android:textSize="18dp" />
 
                     <!-- #7EEFDE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="@font/inder"
-                        android:text="Fastfood Chain"
-                        android:textColor="#7EEFDE"
+                        android:fontFamily="@font/inter_medium"
+                        android:text="Gerry's Seafood House"
+                        android:textColor="#202020"
                         android:textSize="12dp" />
 
                 </LinearLayout>
