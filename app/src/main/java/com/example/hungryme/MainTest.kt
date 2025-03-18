@@ -35,7 +35,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var checkOrder: FrameLayout
-    private lateinit var checkOut: Button
 
     // I already set the lateinit vars here:
     private lateinit var all: Button
@@ -357,7 +356,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         }
 
         checkOrder = findViewById(R.id.checkOrder)
-        checkOut = findViewById(R.id.checkOut)
         pushDown = findViewById(R.id.pushDown)
 
 
