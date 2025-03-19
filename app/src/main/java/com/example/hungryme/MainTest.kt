@@ -32,15 +32,14 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
-    private var lastSelectedButton: Button? = null // Store last clicked button
+    private var lastSelectedButton: Button? = null
     private var lastSelectedCategory: String? = "All"
     private lateinit var searchBar: EditText
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var itemAdapter: ItemAdapter
+    private lateinit var itemAdapter: ItemAdapter // Keep one instance
     private lateinit var checkOrder: FrameLayout
 
-    // I already set the lateinit vars here:
     private lateinit var all: Button
     private lateinit var dish: Button
     private lateinit var drinks: Button
@@ -48,17 +47,16 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
     private lateinit var pushDown: ImageView
     private val itemList = mutableListOf<Item>()
-
     private var filteredItemList = mutableListOf<Item>()
     private var itemPrices = mutableListOf<Double>()
     private var itemCounts = mutableListOf<Int>()
 
+    private val cartItems = mutableListOf<Bundle>() // Shared cart items list
 
     private fun filterItems(query: String) {
         filteredItemList.clear()
-
         if (query.isEmpty()) {
-            filteredItemList.addAll(itemList) // Show all items if query is empty
+            filteredItemList.addAll(itemList)
         } else {
             val lowerCaseQuery = query.lowercase()
             for (item in itemList) {
@@ -67,17 +65,13 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                 }
             }
         }
-
-        itemAdapter.notifyDataSetChanged() // Refresh the RecyclerView
+        itemAdapter.notifyDataSetChanged()
     }
-
-
 
     private fun updateTotalPrice() {
         val totalPrice = itemCounts.indices.sumOf { itemCounts[it] * itemPrices[it] }
         findViewById<TextView>(R.id.total).text = "₱$totalPrice" + "0"
     }
-
 
     private fun categoryOrder(category: String): Int {
         return when (category) {
@@ -88,9 +82,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             else -> 0
         }
     }
-
-
-
 
     private fun updateFoodSelection(index: Int, newValue: Int) {
         val foodSelectionLayout = findViewById<ViewGroup>(R.id.foodSelectionLayout)
@@ -111,7 +102,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             }
         }
     }
-
 
     private fun fetchUserId(username: String, callback: (Int) -> Unit) {
         if (username.isEmpty()) {
@@ -162,37 +152,31 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         requestQueue.add(jsonObjectRequest)
     }
 
-
     private fun resetButtonColors() {
         all.setBackgroundColor(Color.parseColor("#F3F4F6"))
         dish.setBackgroundColor(Color.parseColor("#F3F4F6"))
-
         drinks.setBackgroundColor(Color.parseColor("#F3F4F6"))
         desserts.setBackgroundColor(Color.parseColor("#F3F4F6"))
 
         all.setTextColor(Color.parseColor("#202020"))
         dish.setTextColor(Color.parseColor("#202020"))
-
         drinks.setTextColor(Color.parseColor("#202020"))
         desserts.setTextColor(Color.parseColor("#202020"))
     }
-
 
     private fun fetchStamps(userId: Int, restaurant: String) {
         val url = "${Constants.URL_GET_STAMPS}?user_id=$userId&restaurant=$restaurant"
         Log.d("DEBUG", "Fetching stamp count from: $url")
 
         val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             Response.Listener { response ->
                 try {
-                    Log.d("DEBUG", "Response from API: $response") // Add this
-
+                    Log.d("DEBUG", "Response from API: $response")
                     if (!response.getBoolean("error")) {
-                        val stampCount = response.getInt("count") // Get number of orders
-                        Log.d("DEBUG", "Stamp count fetched: $stampCount") // Add this
+                        val stampCount = response.getInt("count")
+                        Log.d("DEBUG", "Stamp count fetched: $stampCount")
                         updateStampBoxes(stampCount)
                     } else {
                         Log.e("ERROR", "Failed to get stamp count")
@@ -205,15 +189,11 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                 Log.e("API_ERROR", "Volley Error: ${error.message}")
             }
         )
-
         requestQueue.add(jsonObjectRequest)
     }
 
-
-
     private fun updateStampBoxes(stampCount: Int) {
         Log.d("DEBUG", "Updating UI with stamp count: $stampCount")
-
         val boxes = listOf(
             R.id.box1, R.id.box2, R.id.box3, R.id.box4,
             R.id.box5, R.id.box6, R.id.box7, R.id.box8,
@@ -238,250 +218,22 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         }
     }
 
-
     override fun onQuantityChanged(position: Int, quantity: Int) {
         itemCounts[position] = quantity
         updateTotalPrice()
         updateFoodSelection(position, quantity)
     }
 
-
-
     private fun fetchItemsByCategory(restaurantName: String, category: String) {
         val url = "${Constants.URL_FETCH_ITEMS_BY_CATEGORY}?restaurant=${restaurantName}&category=${category}"
         Log.d("API_URL", "Fetching from: $url")
 
         val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             Response.Listener { response ->
                 try {
                     Log.d("API_RESPONSE", "Response: $response")
-
-                    if (!response.getBoolean("error")) {
-                        val jsonArray = response.getJSONArray("items")
-                        itemList.clear()
-                        itemPrices.clear()
-                        itemCounts.clear()
-                        filteredItemList.clear() // Make sure it's reset!
-
-                        for (i in 0 until jsonArray.length()) {
-                            val jsonObject = jsonArray.getJSONObject(i)
-                            val item = Item(
-                                jsonObject.getInt("id"),
-                                jsonObject.getString("name"),
-                                jsonObject.getDouble("price"),
-                                jsonObject.getInt("stock"),
-                                jsonObject.getString("category"),
-                                jsonObject.getString("restaurant"),
-                                jsonObject.getString("file")
-                            )
-                            itemList.add(item)
-                            itemPrices.add(jsonObject.getDouble("price"))
-                            itemCounts.add(0)
-                        }
-
-                        val user = intent.getStringExtra("user")
-
-                        // ✅ Update filteredItemList to match itemList (just like in fetchItems)
-                        filteredItemList.addAll(itemList)
-                        itemAdapter = ItemAdapter(filteredItemList, mutableListOf(), this, user)
-                        recyclerView.adapter = itemAdapter
-
-                    } else {
-                        Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "Error parsing data", Toast.LENGTH_SHORT).show()
-                }
-            },
-            Response.ErrorListener { error ->
-                Log.e("API_ERROR", "Volley Error: ${error.message}")
-                Toast.makeText(this, "Failed to fetch data", Toast.LENGTH_SHORT).show()
-            })
-
-        requestQueue.add(jsonObjectRequest)
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main_test)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        val restaurant = intent.getStringExtra("restaurant") ?: "Default Restaurant"
-        val user = intent.getStringExtra("user") ?: ""
-        Log.d("DEBUG", "Initial user value from Intent: '$user'")
-
-        // I already got the ids here
-        all = findViewById(R.id.all)
-        dish = findViewById(R.id.dish)
-        drinks = findViewById(R.id.drinks)
-        desserts = findViewById(R.id.desserts)
-
-        val firstChoice = findViewById<ImageView>(R.id.firstChoice)
-        val secondChoice = findViewById<ImageView>(R.id.secondChoice)
-        val thirdChoice = findViewById<ImageView>(R.id.thirdChoice)
-        val fourthChoice = findViewById<ImageView>(R.id.fourthChoice)
-
-        firstChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-        val greenColor = Color.parseColor("#47DC1E")
-        secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-        thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-        fourthChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-
-        searchBar = findViewById(R.id.searchBar)
-
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterItems(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-
-        // THIS DOES NOT WORK, EVERYTIME I TRY TO CLICK THIS IT DOES NOT WORK, IT PROBABLY IS BEHIND THE FRAMELAYOUT
-
-        all.setOnClickListener {
-            animateCategoryChange("All", all)
-            fetchItems(restaurant)
-        }
-
-        dish.setOnClickListener {
-            animateCategoryChange("Dish", dish)
-            fetchItemsByCategory(restaurant, "Dish")
-        }
-
-        drinks.setOnClickListener {
-            animateCategoryChange("Drinks", drinks)
-            fetchItemsByCategory(restaurant, "Drinks")
-        }
-
-        desserts.setOnClickListener {
-            animateCategoryChange("Desserts", desserts)
-            fetchItemsByCategory(restaurant, "Desserts")
-        }
-
-        val cartPage = findViewById<FrameLayout>(R.id.cartPage)
-        cartPage.setOnClickListener {
-            val user = intent.getStringExtra("user") ?: ""
-            if (user.isEmpty()) {
-                Log.e("DEBUG", "User is empty, cannot proceed to cart")
-                Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val url = "${Constants.URL_GET_USER_ID}?username=$user"
-            Log.d("DEBUG", "Fetching user ID from: $url")
-            val requestQueue = Volley.newRequestQueue(this)
-
-            val stringRequest = StringRequest(
-                Request.Method.GET, url,
-                { response ->
-                    Log.d("DEBUG", "Raw API Response: '$response'")
-                    if (response.isEmpty()) {
-                        Log.e("DEBUG", "Server returned an empty response")
-                        Toast.makeText(this, "Server returned empty response", Toast.LENGTH_SHORT).show()
-                        return@StringRequest
-                    }
-
-                    try {
-                        val jsonObject = JSONObject(response.trim())
-                        Log.d("DEBUG", "Parsed JSON: $jsonObject")
-
-                        // Check if "error" field exists and handle it
-                        val error = jsonObject.optBoolean("error", false)
-                        if (error) {
-                            val message = jsonObject.optString("message", "Unknown error")
-                            Log.e("DEBUG", "API returned error: $message")
-                            Toast.makeText(this, "Server error: $message", Toast.LENGTH_SHORT).show()
-                            return@StringRequest
-                        }
-
-                        // Try "id" first, then "user_id" as a fallback
-                        var userId = jsonObject.optInt("id", -1)
-                        if (userId == -1) {
-                            userId = jsonObject.optInt("user_id", -1) // Check alternative field name
-                        }
-
-                        if (userId == -1) {
-                            Log.e("DEBUG", "Invalid response: Missing or invalid 'id' or 'user_id'")
-                            Toast.makeText(this, "Invalid response: No user ID found", Toast.LENGTH_SHORT).show()
-                            return@StringRequest
-                        }
-
-                        Log.d("DEBUG", "Fetched UserID: $userId")
-                        val intent = Intent(this, MainActivity13::class.java).apply {
-                            putExtra("user", user)
-                            putExtra("restaurant", restaurant)
-                            putExtra("user_id", userId)
-                        }
-                        startActivity(intent)
-                    } catch (e: JSONException) {
-                        Log.e("DEBUG", "JSON Parsing error: ${e.message}")
-                        Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                { error ->
-                    Log.e("DEBUG", "Volley error: ${error.message ?: "Unknown error"}")
-                    Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
-                    error.networkResponse?.let {
-                        Log.e("DEBUG", "Error Response Code: ${it.statusCode}")
-                        Log.e("DEBUG", "Error Response Data: ${String(it.data)}")
-                    }
-                }
-            )
-
-            requestQueue.add(stringRequest)
-        }
-
-
-        if (user.isNotEmpty()) {
-            fetchUserId(user) { userId ->
-                if (userId != -1) {
-                    fetchStamps(userId, restaurant)
-                } else {
-                    Log.e("ERROR", "Failed to fetch user ID")
-                }
-            }
-        }
-
-        checkOrder = findViewById(R.id.checkOrder)
-        pushDown = findViewById(R.id.pushDown)
-
-
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
-
-        // I do have fetchItems() and fetchItemsByCategory()
-        fetchItems(restaurant)
-
-    }
-
-
-    private fun fetchItems(restaurantName: String) {
-        val url = "${Constants.URL_FETCH_PRODUCTS}?restaurant=${restaurantName}"
-        Log.d("API_URL", "Fetching from: $url")
-
-        val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET, url, null,
-            Response.Listener { response ->
-                try {
-                    Log.d("API_RESPONSE", "Response: $response")
-
                     if (!response.getBoolean("error")) {
                         val jsonArray = response.getJSONArray("items")
                         itemList.clear()
@@ -505,15 +257,8 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                             itemCounts.add(0)
                         }
 
-                        // Now, the goal is I want the product_id to go to itemAdapter
-                        val user = intent.getStringExtra("user")
-                        itemAdapter = ItemAdapter(itemList, mutableListOf(), this, user) // OK ITS JUST ONE ERROR, FIX THAT ONE ERROR NOW!!!!!!!!!
-                        recyclerView.adapter = itemAdapter
-
-                        filteredItemList.addAll(itemList) // Initially, show all items
-                        itemAdapter = ItemAdapter(filteredItemList, mutableListOf(), this, user)
-                        recyclerView.adapter = itemAdapter
-
+                        filteredItemList.addAll(itemList)
+                        itemAdapter.notifyDataSetChanged() // Update existing adapter
                     } else {
                         Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
                     }
@@ -525,41 +270,215 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             Response.ErrorListener { error ->
                 Log.e("API_ERROR", "Volley Error: ${error.message}")
                 Toast.makeText(this, "Failed to fetch data", Toast.LENGTH_SHORT).show()
-            })
-
+            }
+        )
         requestQueue.add(jsonObjectRequest)
     }
 
+    private fun goToCartPage(restaurant: String) {
+        val user = intent.getStringExtra("user")
+        val url = "${Constants.URL_GET_USER_ID}?username=$user"
+        val requestQueue = Volley.newRequestQueue(this)
+
+        val stringRequest = StringRequest(
+            Request.Method.GET, url,
+            { response ->
+                try {
+                    Log.d("CartActivity", "Raw API Response: $response")
+                    val jsonObject = JSONObject(response.trim())
+                    val userId = jsonObject.optInt("user_id")
+
+                    if (userId == -1) {
+                        Log.e("CartActivity", "Invalid response: Missing 'userId'")
+                        Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
+                        return@StringRequest
+                    }
+
+                    Log.d("CartActivity", "Fetched UserID: $userId")
+                    val intent = Intent(this, CartActivity::class.java).apply {
+                        putExtra("user", user)
+                        putExtra("restaurant", restaurant)
+                        putExtra("user_id", userId)
+                    }
+                    startActivity(intent)
+                } catch (e: JSONException) {
+                    Log.e("CartActivity", "JSON Parsing error: ${e.message}")
+                    Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
+                }
+            },
+            { error ->
+                Log.e("CartActivity", "Volley error: ${error.message}")
+                Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
+                error.networkResponse?.let {
+                    Log.e("CartActivity", "Error Response Code: ${it.statusCode}")
+                    Log.e("CartActivity", "Error Response Data: ${String(it.data)}")
+                }
+            }
+        )
+        requestQueue.add(stringRequest)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main_test)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        val restaurant = intent.getStringExtra("restaurant") ?: "Default Restaurant"
+        val user = intent.getStringExtra("user") ?: ""
+        Log.d("DEBUG", "Initial user value from Intent: '$user'")
+
+        all = findViewById(R.id.all)
+        dish = findViewById(R.id.dish)
+        drinks = findViewById(R.id.drinks)
+        desserts = findViewById(R.id.desserts)
+
+        val cartPage = findViewById<FrameLayout>(R.id.cartPage)
+        cartPage.setOnClickListener {
+            goToCartPage(restaurant)
+        }
+
+        val firstChoice = findViewById<ImageView>(R.id.firstChoice)
+        val secondChoice = findViewById<ImageView>(R.id.secondChoice)
+        val thirdChoice = findViewById<ImageView>(R.id.thirdChoice)
+        val fourthChoice = findViewById<ImageView>(R.id.fourthChoice)
+
+        firstChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
+        val greenColor = Color.parseColor("#4CAF50")
+        secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
+        thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
+        fourthChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
+
+        searchBar = findViewById(R.id.searchBar)
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterItems(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        all.setOnClickListener {
+            animateCategoryChange("All", all)
+            fetchItems(restaurant)
+        }
+
+        dish.setOnClickListener {
+            animateCategoryChange("Dish", dish)
+            fetchItemsByCategory(restaurant, "Dish")
+        }
+
+        drinks.setOnClickListener {
+            animateCategoryChange("Drinks", drinks)
+            fetchItemsByCategory(restaurant, "Drinks")
+        }
+
+        desserts.setOnClickListener {
+            animateCategoryChange("Desserts", desserts)
+            fetchItemsByCategory(restaurant, "Desserts")
+        }
+
+        if (user.isNotEmpty()) {
+            fetchUserId(user) { userId ->
+                if (userId != -1) {
+                    fetchStamps(userId, restaurant)
+                } else {
+                    Log.e("ERROR", "Failed to fetch user ID")
+                }
+            }
+        }
+
+        checkOrder = findViewById(R.id.checkOrder)
+        pushDown = findViewById(R.id.pushDown)
+
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
+        // Initialize the adapter once in onCreate
+        filteredItemList.addAll(itemList)
+        itemAdapter = ItemAdapter(filteredItemList, cartItems, this, user, this)
+        recyclerView.adapter = itemAdapter
+
+        // Fetch initial items
+        fetchItems(restaurant)
+    }
+
+    private fun fetchItems(restaurantName: String) {
+        val url = "${Constants.URL_FETCH_PRODUCTS}?restaurant=${restaurantName}"
+        Log.d("API_URL", "Fetching from: $url")
+
+        val requestQueue: RequestQueue = Volley.newRequestQueue(this)
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            Response.Listener { response ->
+                try {
+                    Log.d("API_RESPONSE", "Response: $response")
+                    if (!response.getBoolean("error")) {
+                        val jsonArray = response.getJSONArray("items")
+                        itemList.clear()
+                        itemPrices.clear()
+                        itemCounts.clear()
+                        filteredItemList.clear()
+
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val item = Item(
+                                jsonObject.getInt("id"),
+                                jsonObject.getString("name"),
+                                jsonObject.getDouble("price"),
+                                jsonObject.getInt("stock"),
+                                jsonObject.getString("category"),
+                                jsonObject.getString("restaurant"),
+                                jsonObject.getString("file")
+                            )
+                            itemList.add(item)
+                            itemPrices.add(jsonObject.getDouble("price"))
+                            itemCounts.add(0)
+                        }
+
+                        filteredItemList.addAll(itemList)
+                        itemAdapter.notifyDataSetChanged() // Update existing adapter
+                    } else {
+                        Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Error parsing data", Toast.LENGTH_SHORT).show()
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e("API_ERROR", "Volley Error: ${error.message}")
+                Toast.makeText(this, "Failed to fetch data", Toast.LENGTH_SHORT).show()
+            }
+        )
+        requestQueue.add(jsonObjectRequest)
+    }
 
     private fun animateCategoryChange(newCategory: String, selectedButton: Button) {
-        val container: View = findViewById(R.id.recyclerView) // Replace with your actual container ID
-
-        // Define category order
+        val container: View = findViewById(R.id.recyclerView)
         val categoryOrder = listOf("All", "Dish", "Drinks", "Desserts")
-
-        // Get index of each category
         val lastIndex = categoryOrder.indexOf(lastSelectedCategory)
         val newIndex = categoryOrder.indexOf(newCategory)
 
-        // Determine swipe direction
         val direction = when {
-            newIndex > lastIndex -> R.anim.slide_to_right // Moving forward (right)
-            newIndex < lastIndex -> R.anim.slide_to_left // Moving backward (left)
-            else -> 0 // No change
+            newIndex > lastIndex -> R.anim.slide_to_right
+            newIndex < lastIndex -> R.anim.slide_to_left
+            else -> 0
         }
 
-        // Run animation if needed
         if (direction != 0) {
             val animation = AnimationUtils.loadAnimation(this, direction)
             container.startAnimation(animation)
         }
 
-        // Update button UI
         resetButtonColors()
-        selectedButton.setBackgroundColor(Color.parseColor("#00FF00")) // Green
+        selectedButton.setBackgroundColor(Color.parseColor("#00FF00"))
         selectedButton.setTextColor(Color.parseColor("#202020"))
 
-        // Update last selected category
         lastSelectedCategory = newCategory
     }
 }

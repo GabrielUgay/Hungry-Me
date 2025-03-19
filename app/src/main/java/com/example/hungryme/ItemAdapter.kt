@@ -2,6 +2,7 @@ package com.example.hungryme
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,7 +19,6 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
 
-
 interface OnItemQuantityChangeListener {
     fun onQuantityChanged(position: Int, quantity: Int)
 }
@@ -27,7 +27,8 @@ class ItemAdapter(
     private val itemList: List<Item>,
     private val cartItems: MutableList<Bundle>,
     private val quantityChangeListener: OnItemQuantityChangeListener,
-    private val user: String?
+    private val user: String?,
+    private val context: Context
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -40,7 +41,36 @@ class ItemAdapter(
         val favoriteButton: ImageView = view.findViewById(R.id.favoriteButton)
     }
 
-    private val favoriteProducts = mutableSetOf<Int>() // Store favorite product IDs
+    private val favoriteProducts = mutableSetOf<Int>()
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("FavoritesPrefs", Context.MODE_PRIVATE)
+
+    init {
+        if (!user.isNullOrEmpty()) {
+            // Load cached favorites immediately
+            loadCachedFavorites()
+            // Fetch user ID and update from server
+            fetchUserId(context, user) { userId ->
+                if (!userId.startsWith("Error") && userId != "No Username") {
+                    fetchFavoriteProducts(userId, context)
+                }
+            }
+        }
+    }
+
+    private fun loadCachedFavorites() {
+        val cachedFavorites = sharedPreferences.getStringSet("favoriteProducts_$user", emptySet()) ?: emptySet()
+        favoriteProducts.clear()
+        favoriteProducts.addAll(cachedFavorites.map { it.toInt() })
+        Log.d("ItemAdapter", "Loaded cached favorites: $favoriteProducts")
+    }
+
+    private fun saveCachedFavorites() {
+        with(sharedPreferences.edit()) {
+            putStringSet("favoriteProducts_$user", favoriteProducts.map { it.toString() }.toSet())
+            apply()
+        }
+        Log.d("ItemAdapter", "Saved cached favorites: $favoriteProducts")
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
@@ -50,37 +80,9 @@ class ItemAdapter(
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = itemList[position]
 
-        // Set the item name immediately as a default
         holder.name.text = item.name
         holder.price.text = item.category
 
-        // Fetch the user ID and append it to the name when available
-        fetchUserId(holder.itemView.context, user) { userId ->
-            checkFavoriteStatus(holder.itemView.context, userId.toInt()) { favorites ->
-                favoriteProducts.clear()
-                favoriteProducts.addAll(favorites)
-
-                updateHeartColor(holder.favoriteButton, item.id)
-
-                holder.favoriteButton.setOnClickListener {
-                    if (favoriteProducts.contains(item.id)) {
-                        removeFromFavorites(holder.itemView.context, userId.toInt(), item.id) {
-                            favoriteProducts.remove(item.id)
-                            updateHeartColor(holder.favoriteButton, item.id)
-                            Toast.makeText(holder.itemView.context, "Removed from favorites", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        addToFavorites(holder.itemView.context, userId.toInt(), item.id) {
-                            favoriteProducts.add(item.id)
-                            updateHeartColor(holder.favoriteButton, item.id)
-                            Toast.makeText(holder.itemView.context, "Added to favorites", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-        }
-
-        // Handle quantity display and updates
         val quantity = cartItems.find { it.getString("name") == item.name }?.getInt("quantity") ?: 0
         holder.value1.text = quantity.toString()
 
@@ -106,7 +108,6 @@ class ItemAdapter(
             }
         }
 
-        // Set the image
         try {
             val resId = R.drawable::class.java.getField(item.file).getInt(null)
             holder.image.setImageResource(resId)
@@ -115,7 +116,6 @@ class ItemAdapter(
             holder.image.setImageResource(R.drawable.pork)
         }
 
-        // Handle item click
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, ItemActivity::class.java)
             intent.putExtra("item_id", item.id)
@@ -129,70 +129,128 @@ class ItemAdapter(
             intent.putExtra("user", user)
             holder.itemView.context.startActivity(intent)
         }
+
+        // Set favorite state
+        holder.favoriteButton.setImageResource(
+            if (favoriteProducts.contains(item.id)) R.drawable.red_heart else R.drawable.heart
+        )
+
+        holder.favoriteButton.setOnClickListener {
+            fetchUserId(holder.itemView.context, user) { userId ->
+                if (userId.startsWith("Error") || userId == "No Username") {
+                    Toast.makeText(holder.itemView.context, "Please log in to favorite items", Toast.LENGTH_SHORT).show()
+                    return@fetchUserId
+                }
+
+                if (favoriteProducts.contains(item.id)) {
+                    removeFromFavorites(userId, item.id, item.restaurant, holder.itemView.context) { success ->
+                        if (success) {
+                            favoriteProducts.remove(item.id)
+                            saveCachedFavorites() // Update cache
+                            holder.favoriteButton.setImageResource(R.drawable.heart)
+                            Toast.makeText(holder.itemView.context, "Removed from favorites", Toast.LENGTH_SHORT).show()
+                            notifyItemChanged(position)
+                        }
+                    }
+                } else {
+                    addToFavorites(userId, item.id, item.restaurant, holder.itemView.context) { success ->
+                        if (success) {
+                            favoriteProducts.add(item.id)
+                            saveCachedFavorites() // Update cache
+                            holder.favoriteButton.setImageResource(R.drawable.red_heart)
+                            Toast.makeText(holder.itemView.context, "Added to favorites", Toast.LENGTH_SHORT).show()
+                            notifyItemChanged(position)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun getItemCount() = itemList.size
 
-    private fun updateHeartColor(button: ImageView, productId: Int) {
-        button.setImageResource(if (favoriteProducts.contains(productId)) R.drawable.red_heart else R.drawable.heart)
-    }
-
-    private fun addToFavorites(context: Context, userId: Int, productId: Int, callback: () -> Unit) {
-        val url = Constants.URL_ADD_FAVORITE
-        val request = object : StringRequest(Method.POST, url,
-            Response.Listener { response ->
-                val jsonResponse = JSONObject(response)
-                if (jsonResponse.getBoolean("success")) {
-                    callback()
-                }
-            },
-            Response.ErrorListener { error -> error.printStackTrace() }) {
-            override fun getParams(): MutableMap<String, String> {
-                return hashMapOf("user_id" to userId.toString(), "product_id" to productId.toString())
-            }
-        }
-        Volley.newRequestQueue(context).add(request)
-    }
-
-    private fun removeFromFavorites(context: Context, userId: Int, productId: Int, callback: () -> Unit) {
-        val url = Constants.URL_REMOVE_FAVORITE
-        val request = object : StringRequest(Method.POST, url,
-            Response.Listener { response ->
-                val jsonResponse = JSONObject(response)
-                if (jsonResponse.getBoolean("success")) {
-                    callback()
-                }
-            },
-            Response.ErrorListener { error -> error.printStackTrace() }) {
-            override fun getParams(): MutableMap<String, String> {
-                return hashMapOf("user_id" to userId.toString(), "product_id" to productId.toString())
-            }
-        }
-        Volley.newRequestQueue(context).add(request)
-    }
-
-    private fun checkFavoriteStatus(context: Context, userId: Int, callback: (Set<Int>) -> Unit) {
-        val url = "${Constants.URL_GET_FAVORITES}?user_id=$userId"
-        val request = object : StringRequest(Method.POST, url,
-            Response.Listener { response ->
-                val jsonResponse = JSONObject(response)
-                if (jsonResponse.getBoolean("success")) {
-                    val favoritesArray = jsonResponse.getJSONArray("favorites")
-                    val favoriteIds = mutableSetOf<Int>()
-                    for (i in 0 until favoritesArray.length()) {
-                        favoriteIds.add(favoritesArray.getInt(i))
+    private fun addToFavorites(userId: String, productId: Int, restaurant: String, context: Context, callback: (Boolean) -> Unit) {
+        val url = Constants.URL_ADD_TO_FAVORITES
+        val stringRequest = object : StringRequest(Request.Method.POST, url,
+            { response ->
+                Log.d("AddToFavorites", "Raw response: $response")
+                try {
+                    val jsonObject = JSONObject(response)
+                    val success = jsonObject.getBoolean("success")
+                    if (success) {
+                        callback(true)
+                    } else {
+                        val message = jsonObject.optString("message", "Failed to add to favorites")
+                        Log.e("AddToFavorites", "Server message: $message")
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        callback(false)
                     }
-                    callback(favoriteIds)
-                } else {
-                    callback(emptySet())
+                } catch (e: JSONException) {
+                    Log.e("AddToFavorites", "JSON error: ${e.message}")
+                    Toast.makeText(context, "Error adding to favorites", Toast.LENGTH_SHORT).show()
+                    callback(false)
                 }
             },
-            Response.ErrorListener { error -> error.printStackTrace() }) {
-            override fun getParams(): MutableMap<String, String> {
-                return hashMapOf("user_id" to userId.toString())
+            { error ->
+                Log.e("AddToFavorites", "Network error: ${error.message}")
+                error.networkResponse?.let {
+                    Log.e("AddToFavorites", "Status code: ${it.statusCode}, Data: ${String(it.data)}")
+                }
+                Toast.makeText(context, "Network error: ${error.message}", Toast.LENGTH_SHORT).show()
+                callback(false)
+            }) {
+            override fun getParams(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["user_id"] = userId
+                params["product_id"] = productId.toString()
+                params["restaurant"] = restaurant
+                Log.d("AddToFavorites", "Params: $params")
+                return params
             }
         }
-        Volley.newRequestQueue(context).add(request)
+        Volley.newRequestQueue(context).add(stringRequest)
+    }
+
+    private fun removeFromFavorites(userId: String, productId: Int, restaurant: String, context: Context, callback: (Boolean) -> Unit) {
+        val url = Constants.URL_REMOVE_FROM_FAVORITES
+        val stringRequest = object : StringRequest(Request.Method.POST, url,
+            { response ->
+                Log.d("RemoveFromFavorites", "Raw response: $response")
+                try {
+                    val jsonObject = JSONObject(response)
+                    val success = jsonObject.getBoolean("success")
+                    if (success) {
+                        callback(true)
+                    } else {
+                        val message = jsonObject.optString("message", "Failed to remove from favorites")
+                        Log.e("RemoveFromFavorites", "Server message: $message")
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        callback(false)
+                    }
+                } catch (e: JSONException) {
+                    Log.e("RemoveFromFavorites", "JSON error: ${e.message}")
+                    Toast.makeText(context, "Error removing from favorites", Toast.LENGTH_SHORT).show()
+                    callback(false)
+                }
+            },
+            { error ->
+                Log.e("RemoveFromFavorites", "Network error: ${error.message}")
+                error.networkResponse?.let {
+                    Log.e("RemoveFromFavorites", "Status code: ${it.statusCode}, Data: ${String(it.data)}")
+                }
+                Toast.makeText(context, "Network error: ${error.message}", Toast.LENGTH_SHORT).show()
+                callback(false)
+            }) {
+            override fun getParams(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["user_id"] = userId
+                params["product_id"] = productId.toString()
+                params["restaurant"] = restaurant
+                Log.d("RemoveFromFavorites", "Params: $params")
+                return params
+            }
+        }
+        Volley.newRequestQueue(context).add(stringRequest)
     }
 
     private fun updateQuantity(item: Item, newQuantity: Int) {
@@ -208,9 +266,35 @@ class ItemAdapter(
         }
     }
 
+    private fun fetchFavoriteProducts(userId: String, context: Context) {
+        val url = "${Constants.URL_GET_FAVORITES}?user_id=$userId"
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    val jsonObject = JSONObject(response)
+                    if (jsonObject.getBoolean("success")) {
+                        val favoritesArray = jsonObject.getJSONArray("favorites")
+                        favoriteProducts.clear()
+                        for (i in 0 until favoritesArray.length()) {
+                            val favorite = favoritesArray.getJSONObject(i)
+                            favoriteProducts.add(favorite.getInt("product_id"))
+                        }
+                        saveCachedFavorites() // Update cache after server fetch
+                        Log.d("ItemAdapter", "Favorites fetched from server: $favoriteProducts")
+                        notifyDataSetChanged()
+                    }
+                } catch (e: JSONException) {
+                    Log.e("ItemAdapter", "Error fetching favorites: ${e.message}")
+                }
+            },
+            { error ->
+                Log.e("ItemAdapter", "Network error fetching favorites: ${error.message}")
+            })
+        Volley.newRequestQueue(context).add(stringRequest)
+    }
+
     private fun fetchUserId(context: Context, username: String?, callback: (String) -> Unit) {
         Log.d("fetchUserId", "Fetching user ID for username: $username")
-
         if (username.isNullOrEmpty()) {
             Log.e("fetchUserId", "Username is null or empty")
             callback("No Username")
@@ -222,7 +306,6 @@ class ItemAdapter(
 
         val stringRequest = StringRequest(Request.Method.GET, url, { response ->
             Log.d("fetchUserId", "Raw response: $response")
-
             try {
                 val jsonObject = JSONObject(response)
                 Log.d("fetchUserId", "Parsed JSON: $jsonObject")
@@ -250,5 +333,4 @@ class ItemAdapter(
 
         Volley.newRequestQueue(context).add(stringRequest)
     }
-
 }
