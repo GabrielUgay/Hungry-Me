@@ -143,7 +143,7 @@ class ItemAdapter(
                 }
 
                 if (favoriteProducts.contains(item.id)) {
-                    removeFromFavorites(userId, item.id, item.restaurant, holder.itemView.context) { success ->
+                    removeFromFavorites(userId, item.id, item.restaurant, item.category, holder.itemView.context) { success ->
                         if (success) {
                             favoriteProducts.remove(item.id)
                             saveCachedFavorites() // Update cache
@@ -153,7 +153,7 @@ class ItemAdapter(
                         }
                     }
                 } else {
-                    addToFavorites(userId, item.id, item.restaurant, holder.itemView.context) { success ->
+                    addToFavorites(userId, item.id, item.restaurant, item.category, holder.itemView.context) { success ->
                         if (success) {
                             favoriteProducts.add(item.id)
                             saveCachedFavorites() // Update cache
@@ -169,7 +169,7 @@ class ItemAdapter(
 
     override fun getItemCount() = itemList.size
 
-    private fun addToFavorites(userId: String, productId: Int, restaurant: String, context: Context, callback: (Boolean) -> Unit) {
+    private fun addToFavorites(userId: String, productId: Int, restaurant: String, category: String, context: Context, callback: (Boolean) -> Unit) {
         val url = Constants.URL_ADD_TO_FAVORITES
         val stringRequest = object : StringRequest(Request.Method.POST, url,
             { response ->
@@ -204,6 +204,7 @@ class ItemAdapter(
                 params["user_id"] = userId
                 params["product_id"] = productId.toString()
                 params["restaurant"] = restaurant
+                params["category"] = category
                 Log.d("AddToFavorites", "Params: $params")
                 return params
             }
@@ -211,7 +212,7 @@ class ItemAdapter(
         Volley.newRequestQueue(context).add(stringRequest)
     }
 
-    private fun removeFromFavorites(userId: String, productId: Int, restaurant: String, context: Context, callback: (Boolean) -> Unit) {
+    private fun removeFromFavorites(userId: String, productId: Int, restaurant: String, category: String, context: Context, callback: (Boolean) -> Unit) {
         val url = Constants.URL_REMOVE_FROM_FAVORITES
         val stringRequest = object : StringRequest(Request.Method.POST, url,
             { response ->
@@ -246,6 +247,7 @@ class ItemAdapter(
                 params["user_id"] = userId
                 params["product_id"] = productId.toString()
                 params["restaurant"] = restaurant
+                params["category"] = category
                 Log.d("RemoveFromFavorites", "Params: $params")
                 return params
             }
