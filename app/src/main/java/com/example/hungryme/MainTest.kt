@@ -332,7 +332,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         val fourthChoice = findViewById<ImageView>(R.id.fourthChoice)
 
         firstChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-        val greenColor = Color.parseColor("#4CAF50")
+        val greenColor = Color.parseColor("#47DC1E")
         secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
         thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
         fourthChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
@@ -421,7 +421,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                         }
 
                         Log.d("DEBUG", "Fetched UserID: $userId")
-                        val intent = Intent(this, CartActivity::class.java).apply {
+                        val intent = Intent(this, MainActivity13::class.java).apply {
                             putExtra("user", user)
                             putExtra("restaurant", restaurant)
                             putExtra("user_id", userId)

@@ -14,6 +14,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
+import org.w3c.dom.Text
 
 class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
 
@@ -22,7 +23,6 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
     private var cartItems: MutableList<Bundle> = mutableListOf()
     private var totalPrice = 0
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,25 +31,22 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
         orderListLayout = findViewById(R.id.orderListLayout)
         totalTextView = findViewById(R.id.totalTextView)
 
-        val user = intent.getStringExtra("user")
-        val userId = intent.getIntExtra("userId", 2)  // Default to -1 to catch errors
+        val user = intent.getStringExtra("user") ?: ""
+        val userId = intent.getIntExtra("user_id", -1)
         val restaurant = intent.getStringExtra("restaurant") ?: ""
 
-        Log.d("MainActivity13", "Received User: $user, UserID: $userId, Restaurant: $restaurant")
+        Log.d("CartActivity", "Received User: $user, UserID: $userId, Restaurant: $restaurant")
 
-        fetchCartData(userId, restaurant)
-
-
-        findViewById<ImageView>(R.id.closeCart).setOnClickListener {
-            startActivity(Intent(this, MainActivity7::class.java).apply {
-                putExtra("user", user)
-            })
+        if (userId != -1) {
+            fetchCartData(userId, restaurant)
+        } else {
+            Toast.makeText(this, "Invalid User ID", Toast.LENGTH_SHORT).show()
         }
 
+        findViewById<ImageView>(R.id.closeCart).setOnClickListener {
+            finish()
+        }
 
-        // val restaurant = intent.getStringExtra("restaurant") ?: "" -- this is already here, no need to declare this again
-
-        // This is MainActivity13.kt, serve this as a guide for ItemActivity.kt
         findViewById<FrameLayout>(R.id.proceedToCheckOut).setOnClickListener {
             if (totalPrice <= 0) {
                 Toast.makeText(this, "Cart is empty.", Toast.LENGTH_SHORT).show()
@@ -237,12 +234,6 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
                     .show()
             }
         }
-
-
-
-
-
-
     }
 
     private fun fetchCartData(userId: Int, restaurant: String) {
@@ -283,7 +274,6 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
         Volley.newRequestQueue(this).add(request)
     }
 
-
     override fun onQuantityChanged(position: Int, quantity: Int) {
         cartItems[position].putInt("quantity", quantity)
         updateCartUI()
@@ -303,7 +293,6 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
                 totalPrice += (itemQuantity * itemPrice).toInt()
 
                 val itemView = layoutInflater.inflate(R.layout.item_order, orderListLayout, false)
-
                 itemView.findViewById<TextView>(R.id.orderName).text = itemName
                 itemView.findViewById<TextView>(R.id.value1).text = "$itemQuantity"
                 itemView.findViewById<TextView>(R.id.orderPrice).text = "₱${(itemQuantity * itemPrice).toInt()}.00"
@@ -316,11 +305,10 @@ class MainActivity13 : AppCompatActivity(), OnItemQuantityChangeListener {
                         Log.e("CartData", "Image not found: $itemFile")
                     }
                 }
-
                 orderListLayout.addView(itemView)
             }
-
             totalTextView.text = "Total: ₱$totalPrice.00"
         }
     }
 }
+
