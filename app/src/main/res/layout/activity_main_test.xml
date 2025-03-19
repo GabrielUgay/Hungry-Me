@@ -497,27 +497,112 @@
 
     <!-- Fixed Footer Section -->
     <LinearLayout
-        android:id="@+id/footerLayout"
+        android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="-20dp"
-            android:gravity="center_horizontal">
+            android:id="@+id/cartPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:src="@drawable/group18" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:src="@drawable/group4920" />
+                android:layout_gravity="center"
+                android:src="@drawable/shopping_cart" />
+
         </FrameLayout>
+
+        <FrameLayout
+            android:layout_marginTop="-50dp"
+            android:layout_marginBottom="-10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:src="@drawable/group19" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_page2"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="30dp" />
+
+            <ImageView
+                android:id="@+id/firstChoice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ellipse6"
+                android:layout_marginTop="58dp"
+                android:layout_marginStart="40dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/user_profile"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="110dp"/>
+
+            <ImageView
+                android:id="@+id/secondChoice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ellipse6"
+                android:layout_marginTop="58dp"
+                android:layout_marginStart="120dp" />
+
+            <ImageView
+                android:layout_gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/order"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="100dp"/>
+
+            <ImageView
+                android:id="@+id/thirdChoice"
+                android:layout_gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ellipse6"
+                android:layout_marginTop="58dp"
+                android:layout_marginEnd="110dp" />
+
+            <ImageView
+                android:layout_gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/favs"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="30dp"/>
+
+            <ImageView
+                android:id="@+id/fourthChoice"
+                android:layout_gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ellipse6"
+                android:layout_marginTop="58dp"
+                android:layout_marginEnd="40dp" />
+
+        </FrameLayout>
+
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
