@@ -382,6 +382,22 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             fetchItemsByCategory(restaurant, "Desserts")
         }
 
+        val homePage2 = findViewById<ImageView>(R.id.homePage2)
+        homePage2.setOnClickListener {
+            // Reset to show all items based on the current category
+            when (lastSelectedCategory) {
+                "All" -> fetchItems(restaurant)
+                "Dish" -> fetchItemsByCategory(restaurant, "Dish")
+                "Drinks" -> fetchItemsByCategory(restaurant, "Drinks")
+                "Desserts" -> fetchItemsByCategory(restaurant, "Desserts")
+            }
+        }
+
+        val favs = findViewById<ImageView>(R.id.favs)
+        favs.setOnClickListener {
+            fetchItemsByFavoritesAndCategory()
+        }
+
         if (user.isNotEmpty()) {
             fetchUserId(user) { userId ->
                 if (userId != -1) {
@@ -405,6 +421,74 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
         // Fetch initial items
         fetchItems(restaurant)
+    }
+
+    private fun fetchItemsByFavoritesAndCategory() {
+        val user = intent.getStringExtra("user") ?: ""
+        val restaurant = intent.getStringExtra("restaurant") ?: "Default Restaurant"
+
+        if (user.isEmpty()) {
+            Toast.makeText(this, "Please log in to view favorites", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        fetchUserId(user) { userId ->
+            if (userId == -1) {
+                Toast.makeText(this, "Failed to fetch user ID", Toast.LENGTH_SHORT).show()
+                return@fetchUserId
+            }
+
+            val url = "${Constants.URL_GET_FAVORITES}?user_id=$userId&restaurant=$restaurant" +
+                    if (lastSelectedCategory != "All") "&category=$lastSelectedCategory" else ""
+            Log.d("API_URL", "Fetching favorites from: $url")
+
+            val requestQueue: RequestQueue = Volley.newRequestQueue(this)
+            val jsonObjectRequest = JsonObjectRequest(
+                Request.Method.GET, url, null,
+                Response.Listener { response ->
+                    try {
+                        Log.d("API_RESPONSE", "Favorites Response: $response")
+                        if (!response.getBoolean("error")) {
+                            val jsonArray = response.getJSONArray("items")
+                            itemList.clear()
+                            itemPrices.clear()
+                            itemCounts.clear()
+                            filteredItemList.clear()
+
+                            for (i in 0 until jsonArray.length()) {
+                                val jsonObject = jsonArray.getJSONObject(i)
+                                val item = Item(
+                                    jsonObject.getInt("id"),
+                                    jsonObject.getString("name"),
+                                    jsonObject.getDouble("price"),
+                                    jsonObject.getInt("stock"),
+                                    jsonObject.getString("category"),
+                                    jsonObject.getString("restaurant"),
+                                    jsonObject.getString("file")
+                                )
+                                itemList.add(item)
+                                itemPrices.add(jsonObject.getDouble("price"))
+                                itemCounts.add(0)
+                            }
+
+                            filteredItemList.addAll(itemList)
+                            itemAdapter.notifyDataSetChanged()
+                            recyclerView.scrollToPosition(0)
+                        } else {
+                            Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        Toast.makeText(this, "Error parsing favorites data", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                Response.ErrorListener { error ->
+                    Log.e("API_ERROR", "Volley Error: ${error.message}")
+                    Toast.makeText(this, "Failed to fetch favorites", Toast.LENGTH_SHORT).show()
+                }
+            )
+            requestQueue.add(jsonObjectRequest)
+        }
     }
 
     private fun fetchItems(restaurantName: String) {
