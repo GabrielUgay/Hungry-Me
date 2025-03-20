@@ -24,11 +24,13 @@ interface OnItemQuantityChangeListener {
 }
 
 class ItemAdapter(
+    private val items: MutableList<Item>,
     private val itemList: List<Item>,
     private val cartItems: MutableList<Bundle>,
     private val quantityChangeListener: OnItemQuantityChangeListener,
     private val user: String?,
-    private val context: Context
+    private val context: Context,
+    private val mainActivity: MainTest
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -41,14 +43,11 @@ class ItemAdapter(
         val favoriteButton: ImageView = view.findViewById(R.id.favoriteButton)
     }
 
-    private val favoriteProducts = mutableSetOf<Int>()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("FavoritesPrefs", Context.MODE_PRIVATE)
 
     init {
         if (!user.isNullOrEmpty()) {
-            // Load cached favorites immediately
             loadCachedFavorites()
-            // Fetch user ID and update from server
             fetchUserId(context, user) { userId ->
                 if (!userId.startsWith("Error") && userId != "No Username") {
                     fetchFavoriteProducts(userId, context)
@@ -59,17 +58,17 @@ class ItemAdapter(
 
     private fun loadCachedFavorites() {
         val cachedFavorites = sharedPreferences.getStringSet("favoriteProducts_$user", emptySet()) ?: emptySet()
-        favoriteProducts.clear()
-        favoriteProducts.addAll(cachedFavorites.map { it.toInt() })
-        Log.d("ItemAdapter", "Loaded cached favorites: $favoriteProducts")
+        mainActivity.favoriteItems.clear()
+        mainActivity.favoriteItems.addAll(cachedFavorites.map { it.toInt() })
+        Log.d("ItemAdapter", "Loaded cached favorites: ${mainActivity.favoriteItems}")
     }
 
     private fun saveCachedFavorites() {
         with(sharedPreferences.edit()) {
-            putStringSet("favoriteProducts_$user", favoriteProducts.map { it.toString() }.toSet())
+            putStringSet("favoriteProducts_$user", mainActivity.favoriteItems.map { it.toString() }.toSet())
             apply()
         }
-        Log.d("ItemAdapter", "Saved cached favorites: $favoriteProducts")
+        Log.d("ItemAdapter", "Saved cached favorites: ${mainActivity.favoriteItems}")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -130,9 +129,8 @@ class ItemAdapter(
             holder.itemView.context.startActivity(intent)
         }
 
-        // Set favorite state
         holder.favoriteButton.setImageResource(
-            if (favoriteProducts.contains(item.id)) R.drawable.red_heart else R.drawable.heart
+            if (mainActivity.favoriteItems.contains(item.id)) R.drawable.red_heart else R.drawable.heart
         )
 
         holder.favoriteButton.setOnClickListener {
@@ -142,21 +140,26 @@ class ItemAdapter(
                     return@fetchUserId
                 }
 
-                if (favoriteProducts.contains(item.id)) {
+                if (mainActivity.favoriteItems.contains(item.id)) {
                     removeFromFavorites(userId, item.id, item.restaurant, item.category, holder.itemView.context) { success ->
                         if (success) {
-                            favoriteProducts.remove(item.id)
-                            saveCachedFavorites() // Update cache
+                            mainActivity.favoriteItems.remove(item.id)
+                            saveCachedFavorites()
                             holder.favoriteButton.setImageResource(R.drawable.heart)
                             Toast.makeText(holder.itemView.context, "Removed from favorites", Toast.LENGTH_SHORT).show()
-                            notifyItemChanged(position)
+                            if (mainActivity.isShowingFavorites) {
+                                items.removeAt(position)
+                                notifyItemRemoved(position)
+                            } else {
+                                notifyItemChanged(position)
+                            }
                         }
                     }
                 } else {
                     addToFavorites(userId, item.id, item.restaurant, item.category, holder.itemView.context) { success ->
                         if (success) {
-                            favoriteProducts.add(item.id)
-                            saveCachedFavorites() // Update cache
+                            mainActivity.favoriteItems.add(item.id)
+                            saveCachedFavorites()
                             holder.favoriteButton.setImageResource(R.drawable.red_heart)
                             Toast.makeText(holder.itemView.context, "Added to favorites", Toast.LENGTH_SHORT).show()
                             notifyItemChanged(position)
@@ -276,13 +279,13 @@ class ItemAdapter(
                     val jsonObject = JSONObject(response)
                     if (jsonObject.getBoolean("success")) {
                         val favoritesArray = jsonObject.getJSONArray("favorites")
-                        favoriteProducts.clear()
+                        mainActivity.favoriteItems.clear()
                         for (i in 0 until favoritesArray.length()) {
                             val favorite = favoritesArray.getJSONObject(i)
-                            favoriteProducts.add(favorite.getInt("product_id"))
+                            mainActivity.favoriteItems.add(favorite.getInt("product_id"))
                         }
-                        saveCachedFavorites() // Update cache after server fetch
-                        Log.d("ItemAdapter", "Favorites fetched from server: $favoriteProducts")
+                        saveCachedFavorites()
+                        Log.d("ItemAdapter", "Favorites fetched from server: ${mainActivity.favoriteItems}")
                         notifyDataSetChanged()
                     }
                 } catch (e: JSONException) {

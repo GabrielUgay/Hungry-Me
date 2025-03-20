@@ -37,7 +37,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private lateinit var searchBar: EditText
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var itemAdapter: ItemAdapter // Keep one instance
+    private lateinit var itemAdapter: ItemAdapter
     private lateinit var checkOrder: FrameLayout
 
     private lateinit var all: Button
@@ -45,13 +45,19 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private lateinit var drinks: Button
     private lateinit var desserts: Button
 
+    private lateinit var homePage2: ImageView
+    private lateinit var favs: ImageView
+
     private lateinit var pushDown: ImageView
     private val itemList = mutableListOf<Item>()
     private var filteredItemList = mutableListOf<Item>()
     private var itemPrices = mutableListOf<Double>()
     private var itemCounts = mutableListOf<Int>()
 
-    private val cartItems = mutableListOf<Bundle>() // Shared cart items list
+    var favoriteItems = mutableSetOf<Int>() // Shared favorite items
+    var isShowingFavorites = false // Track if we're in favorites mode
+
+    private val cartItems = mutableListOf<Bundle>()
 
     private fun filterItems(query: String) {
         filteredItemList.clear()
@@ -257,8 +263,12 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                             itemCounts.add(0)
                         }
 
-                        filteredItemList.addAll(itemList)
-                        itemAdapter.notifyDataSetChanged() // Update existing adapter
+                        if (isShowingFavorites) {
+                            filterFavorites(category)
+                        } else {
+                            filteredItemList.addAll(itemList)
+                            itemAdapter.notifyDataSetChanged()
+                        }
                     } else {
                         Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
                     }
@@ -318,6 +328,40 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         requestQueue.add(stringRequest)
     }
 
+    private fun filterFavorites(category: String) {
+        filteredItemList.clear()
+
+        val itemsToShow = if (category == "All") {
+            itemList.filter { favoriteItems.contains(it.id) }
+        } else {
+            itemList.filter {
+                favoriteItems.contains(it.id) && it.category == category
+            }
+        }
+
+        filteredItemList.addAll(itemsToShow)
+        itemAdapter.notifyDataSetChanged()
+
+        if (filteredItemList.isEmpty()) {
+            Toast.makeText(this, "No favorite items in this category", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun toggleFavorite(itemId: Int) {
+        if (favoriteItems.contains(itemId)) {
+            favoriteItems.remove(itemId)
+            if (isShowingFavorites) {
+                val itemToRemove = filteredItemList.find { it.id == itemId }
+                itemToRemove?.let {
+                    filteredItemList.remove(it)
+                    itemAdapter.notifyDataSetChanged()
+                }
+            }
+        } else {
+            favoriteItems.add(itemId)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -336,6 +380,9 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         dish = findViewById(R.id.dish)
         drinks = findViewById(R.id.drinks)
         desserts = findViewById(R.id.desserts)
+
+        homePage2 = findViewById(R.id.homePage2)
+        favs = findViewById(R.id.favs)
 
         val cartPage = findViewById<FrameLayout>(R.id.cartPage)
         cartPage.setOnClickListener {
@@ -382,20 +429,25 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             fetchItemsByCategory(restaurant, "Desserts")
         }
 
-        val homePage2 = findViewById<ImageView>(R.id.homePage2)
         homePage2.setOnClickListener {
-            // Reset to show all items based on the current category
-            when (lastSelectedCategory) {
-                "All" -> fetchItems(restaurant)
-                "Dish" -> fetchItemsByCategory(restaurant, "Dish")
-                "Drinks" -> fetchItemsByCategory(restaurant, "Drinks")
-                "Desserts" -> fetchItemsByCategory(restaurant, "Desserts")
-            }
+            // Add logic if needed
         }
 
-        val favs = findViewById<ImageView>(R.id.favs)
         favs.setOnClickListener {
-            fetchItemsByFavoritesAndCategory()
+            if (!isShowingFavorites) {
+                isShowingFavorites = true
+                favs.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+                filterFavorites(lastSelectedCategory ?: "All")
+            } else {
+                isShowingFavorites = false
+                favs.clearColorFilter()
+                when (lastSelectedCategory) {
+                    "All" -> fetchItems(restaurant)
+                    "Dish" -> fetchItemsByCategory(restaurant, "Dish")
+                    "Drinks" -> fetchItemsByCategory(restaurant, "Drinks")
+                    "Desserts" -> fetchItemsByCategory(restaurant, "Desserts")
+                }
+            }
         }
 
         if (user.isNotEmpty()) {
@@ -414,81 +466,11 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
-        // Initialize the adapter once in onCreate
         filteredItemList.addAll(itemList)
-        itemAdapter = ItemAdapter(filteredItemList, cartItems, this, user, this)
+        itemAdapter = ItemAdapter(filteredItemList, filteredItemList, cartItems, this, user, this, this)
         recyclerView.adapter = itemAdapter
 
-        // Fetch initial items
         fetchItems(restaurant)
-    }
-
-    private fun fetchItemsByFavoritesAndCategory() {
-        val user = intent.getStringExtra("user") ?: ""
-        val restaurant = intent.getStringExtra("restaurant") ?: "Default Restaurant"
-
-        if (user.isEmpty()) {
-            Toast.makeText(this, "Please log in to view favorites", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        fetchUserId(user) { userId ->
-            if (userId == -1) {
-                Toast.makeText(this, "Failed to fetch user ID", Toast.LENGTH_SHORT).show()
-                return@fetchUserId
-            }
-
-            val url = "${Constants.URL_GET_FAVORITES}?user_id=$userId&restaurant=$restaurant" +
-                    if (lastSelectedCategory != "All") "&category=$lastSelectedCategory" else ""
-            Log.d("API_URL", "Fetching favorites from: $url")
-
-            val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-            val jsonObjectRequest = JsonObjectRequest(
-                Request.Method.GET, url, null,
-                Response.Listener { response ->
-                    try {
-                        Log.d("API_RESPONSE", "Favorites Response: $response")
-                        if (!response.getBoolean("error")) {
-                            val jsonArray = response.getJSONArray("items")
-                            itemList.clear()
-                            itemPrices.clear()
-                            itemCounts.clear()
-                            filteredItemList.clear()
-
-                            for (i in 0 until jsonArray.length()) {
-                                val jsonObject = jsonArray.getJSONObject(i)
-                                val item = Item(
-                                    jsonObject.getInt("id"),
-                                    jsonObject.getString("name"),
-                                    jsonObject.getDouble("price"),
-                                    jsonObject.getInt("stock"),
-                                    jsonObject.getString("category"),
-                                    jsonObject.getString("restaurant"),
-                                    jsonObject.getString("file")
-                                )
-                                itemList.add(item)
-                                itemPrices.add(jsonObject.getDouble("price"))
-                                itemCounts.add(0)
-                            }
-
-                            filteredItemList.addAll(itemList)
-                            itemAdapter.notifyDataSetChanged()
-                            recyclerView.scrollToPosition(0)
-                        } else {
-                            Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                        Toast.makeText(this, "Error parsing favorites data", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                Response.ErrorListener { error ->
-                    Log.e("API_ERROR", "Volley Error: ${error.message}")
-                    Toast.makeText(this, "Failed to fetch favorites", Toast.LENGTH_SHORT).show()
-                }
-            )
-            requestQueue.add(jsonObjectRequest)
-        }
     }
 
     private fun fetchItems(restaurantName: String) {
@@ -524,8 +506,12 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                             itemCounts.add(0)
                         }
 
-                        filteredItemList.addAll(itemList)
-                        itemAdapter.notifyDataSetChanged() // Update existing adapter
+                        if (isShowingFavorites) {
+                            filterFavorites("All")
+                        } else {
+                            filteredItemList.addAll(itemList)
+                            itemAdapter.notifyDataSetChanged()
+                        }
                     } else {
                         Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
                     }
