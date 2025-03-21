@@ -14,7 +14,6 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
-import org.w3c.dom.Text
 
 class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
 
@@ -60,72 +59,54 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                     .setMessage("Your total: ₱$totalPrice.00\nDo you want to proceed?")
                     .setPositiveButton("Yes") { _, _ ->
                         val requestQueue = Volley.newRequestQueue(this)
-
-                        // Step 1: Insert Order First
                         val addOrderRequest = object : StringRequest(Method.POST, Constants.URL_ADD_ORDER,
                             Response.Listener { orderResponse ->
                                 try {
                                     Log.d("AddOrderRawResponse", orderResponse)
-
                                     if (orderResponse.isEmpty()) {
                                         Log.e("AddOrderError", "Empty response from server")
                                         Toast.makeText(this, "Server returned an empty response.", Toast.LENGTH_SHORT).show()
                                         return@Listener
                                     }
-
                                     val orderJson = JSONObject(orderResponse)
                                     Log.d("AddOrderParsedJSON", orderJson.toString())
-
                                     if (orderJson.getBoolean("success")) {
                                         val orderId = orderJson.getInt("order_id")
-
-                                        // Step 2: Update Stock First
                                         val updateStockRequest = object : StringRequest(Method.POST, Constants.URL_UPDATE_STOCK,
                                             Response.Listener { stockResponse ->
                                                 try {
                                                     Log.d("UpdateStockRawResponse", stockResponse)
-
                                                     if (stockResponse.isEmpty()) {
                                                         Log.e("UpdateStockError", "Empty response from server")
                                                         Toast.makeText(this, "Server returned an empty response.", Toast.LENGTH_SHORT).show()
                                                         return@Listener
                                                     }
-
                                                     val stockJson = JSONObject(stockResponse)
                                                     Log.d("UpdateStockParsedJSON", stockJson.toString())
-
                                                     if (stockJson.getBoolean("success")) {
-                                                        // Step 3: Insert Receipt
                                                         val addReceiptRequest = object : StringRequest(Method.POST, Constants.URL_ADD_RECEIPT,
                                                             Response.Listener { receiptResponse ->
                                                                 try {
                                                                     Log.d("AddReceiptRawResponse", receiptResponse)
-
                                                                     if (receiptResponse.isEmpty()) {
                                                                         Log.e("AddReceiptError", "Empty response from server")
                                                                         Toast.makeText(this, "Server returned an empty response.", Toast.LENGTH_SHORT).show()
                                                                         return@Listener
                                                                     }
-
                                                                     val receiptJson = JSONObject(receiptResponse)
                                                                     Log.d("AddReceiptParsedJSON", receiptJson.toString())
-
                                                                     if (receiptJson.getBoolean("success")) {
-                                                                        // Step 4: Delete Cart Only After Everything is Successful
                                                                         val deleteCartRequest = object : StringRequest(Method.POST, Constants.URL_DELETE_CART,
                                                                             Response.Listener { deleteResponse ->
                                                                                 try {
                                                                                     Log.d("DeleteCartRawResponse", deleteResponse)
-
                                                                                     if (deleteResponse.isEmpty()) {
                                                                                         Log.e("DeleteCartError", "Empty response from server")
                                                                                         Toast.makeText(this, "Server returned an empty response.", Toast.LENGTH_SHORT).show()
                                                                                         return@Listener
                                                                                     }
-
                                                                                     val deleteJson = JSONObject(deleteResponse)
                                                                                     Log.d("DeleteCartParsedJSON", deleteJson.toString())
-
                                                                                     if (deleteJson.getBoolean("success")) {
                                                                                         Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_SHORT).show()
                                                                                         startActivity(Intent(this, MainActivity12::class.java).apply {
@@ -155,8 +136,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                                                                                 )
                                                                             }
                                                                         }
-
-                                                                        requestQueue.add(deleteCartRequest) // Execute Delete Cart
+                                                                        requestQueue.add(deleteCartRequest)
                                                                     } else {
                                                                         Toast.makeText(this, "Receipt failed: ${receiptJson.getString("message")}", Toast.LENGTH_SHORT).show()
                                                                     }
@@ -180,8 +160,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                                                                 )
                                                             }
                                                         }
-
-                                                        requestQueue.add(addReceiptRequest) // Execute Add Receipt
+                                                        requestQueue.add(addReceiptRequest)
                                                     } else {
                                                         Toast.makeText(this, "Stock update failed: ${stockJson.getString("message")}", Toast.LENGTH_SHORT).show()
                                                     }
@@ -205,9 +184,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                                                 )
                                             }
                                         }
-
-                                        requestQueue.add(updateStockRequest) // Execute Stock Update
-
+                                        requestQueue.add(updateStockRequest)
                                     } else {
                                         Toast.makeText(this, "Order failed: ${orderJson.getString("message")}", Toast.LENGTH_SHORT).show()
                                     }
@@ -231,8 +208,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                                 )
                             }
                         }
-
-                        requestQueue.add(addOrderRequest) // Execute Add Order First
+                        requestQueue.add(addOrderRequest)
                     }
                     .setNegativeButton("No", null)
                     .show()
@@ -260,6 +236,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                                 putDouble("price", item.optDouble("price"))
                                 putInt("quantity", item.optInt("quantity"))
                                 putString("file", item.optString("file"))
+                                putInt("id", item.optInt("id")) // Add product_id
                             })
                         }
                         updateCartUI()
@@ -283,16 +260,149 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
         updateCartUI()
     }
 
+    // Updated updateCart function
+    private fun updateCart(userId: Int, productId: Int, quantity: Int, index: Int, oldQuantity: Int) {
+        if (productId == -1) {
+            Log.e("UpdateCart", "Invalid product ID: $productId for user $userId")
+            Toast.makeText(this, "Invalid product ID", Toast.LENGTH_SHORT).show()
+            revertQuantity(index, oldQuantity) // Revert to old quantity
+            return
+        }
+
+        val url = Constants.URL_UPDATE_CART_ITEM
+        val requestQueue = Volley.newRequestQueue(this)
+
+        val request = object : StringRequest(Method.POST, url,
+            Response.Listener { response ->
+                Log.d("UpdateCartResponse", "Raw Response: $response")
+                if (response.isEmpty()) {
+                    Log.e("UpdateCart", "Empty response from server")
+                    Toast.makeText(this, "Server returned an empty response", Toast.LENGTH_SHORT).show()
+                    revertQuantity(index, oldQuantity)
+                    return@Listener
+                }
+                try {
+                    val jsonObject = JSONObject(response)
+                    if (jsonObject.getBoolean("success")) {
+                        Log.d("UpdateCart", "Quantity updated successfully to $quantity for product $productId")
+                        updateCartUI() // Only refresh UI on success
+                    } else {
+                        val errorMessage = jsonObject.optString("message", "Unknown error")
+                        Log.e("UpdateCart", "Failed: $errorMessage")
+                        revertQuantity(index, oldQuantity)
+                        // Fixed to show the actual server error message instead of parameters
+                        Toast.makeText(this, "Failed to update quantity: $errorMessage", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: JSONException) {
+                    Log.e("UpdateCart", "JSON Parsing Error: ${e.message}")
+                    revertQuantity(index, oldQuantity)
+                    Toast.makeText(this, "Error parsing server response", Toast.LENGTH_SHORT).show()
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e("UpdateCart", "Volley Error: ${error.message}")
+                error.networkResponse?.data?.let {
+                    val errorBody = String(it, Charsets.UTF_8)
+                    Log.e("UpdateCart", "Error Body: $errorBody")
+                }
+                revertQuantity(index, oldQuantity)
+                Toast.makeText(this, "Failed to update cart: ${error.message}", Toast.LENGTH_SHORT).show()
+            }) {
+            override fun getParams(): Map<String, String> {
+                val params = mapOf(
+                    "user_id" to userId.toString(),
+                    "product_id" to productId.toString(), // Fixed to match PHP's expected "product_id"
+                    "quantity" to quantity.toString()
+                )
+                Log.d("UpdateCartParams", "Params: $params")
+                return params
+            }
+        }
+        requestQueue.add(request)
+    }
+
+    // Updated removeItemFromCart function
+    private fun removeItemFromCart(userId: Int, productId: Int, index: Int) {
+        if (productId == -1) {
+            Log.e("RemoveItem", "Invalid product ID: $productId for user $userId")
+            Toast.makeText(this, "Invalid product ID", Toast.LENGTH_SHORT).show()
+            revertQuantity(index, 1) // Revert to 1 if removal fails
+            return
+        }
+
+        val url = Constants.URL_DELETE_ITEM_FROM_CART
+        val requestQueue = Volley.newRequestQueue(this)
+
+        val request = object : StringRequest(Method.POST, url,
+            Response.Listener { response ->
+                Log.d("RemoveItemResponse", "Raw Response: $response")
+                if (response.isEmpty()) {
+                    Log.e("RemoveItem", "Empty response from server")
+                    Toast.makeText(this, "Server returned an empty response", Toast.LENGTH_SHORT).show()
+                    revertQuantity(index, 1) // Revert to 1 if removal fails
+                    return@Listener
+                }
+                try {
+                    val jsonObject = JSONObject(response)
+                    if (jsonObject.getBoolean("success")) {
+                        val itemName = cartItems[index].getString("name") ?: "Item"
+                        Log.d("RemoveItem", "Successfully removed $itemName (ID: $productId)")
+                        cartItems.removeAt(index)
+                        updateCartUI()
+                        Toast.makeText(this, "$itemName removed from cart", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val errorMessage = jsonObject.optString("message", "Unknown error")
+                        Log.e("RemoveItem", "Failed: $errorMessage")
+                        revertQuantity(index, 1) // Revert to 1 if removal fails
+                        Toast.makeText(this, "Failed to remove item: $errorMessage", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: JSONException) {
+                    Log.e("RemoveItem", "JSON Parsing Error: ${e.message}")
+                    revertQuantity(index, 1) // Revert to 1 if removal fails
+                    Toast.makeText(this, "Error parsing server response", Toast.LENGTH_SHORT).show()
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e("RemoveItem", "Volley Error: ${error.message}")
+                error.networkResponse?.data?.let {
+                    val errorBody = String(it, Charsets.UTF_8)
+                    Log.e("RemoveItem", "Error Body: $errorBody")
+                }
+                revertQuantity(index, 1) // Revert to 1 if removal fails
+                Toast.makeText(this, "Failed to remove item: ${error.message}", Toast.LENGTH_SHORT).show()
+            }) {
+            override fun getParams(): Map<String, String> {
+                val params = mapOf(
+                    "user_id" to userId.toString(),
+                    "product_id" to productId.toString(), // Fixed to match PHP's expected "product_id"
+                )
+                Log.d("RemoveItemParams", "Params: $params")
+                return params
+            }
+        }
+        requestQueue.add(request)
+    }
+
+    // Helper function to revert quantity
+    private fun revertQuantity(index: Int, quantity: Int) {
+        cartItems[index].putInt("quantity", quantity)
+        updateCartUI()
+    }
+
     private fun updateCartUI() {
         runOnUiThread {
             orderListLayout.removeAllViews()
             totalPrice = 0
 
-            for (item in cartItems) {
+            val userId = intent.getIntExtra("user_id", -1)
+
+            for ((index, item) in cartItems.withIndex()) {
                 val itemName = item.getString("name") ?: "Unknown"
                 val itemQuantity = item.getInt("quantity", 0)
                 val itemPrice = item.getDouble("price", 0.0)
                 val itemFile = item.getString("file", "")
+
+                val productId = item.getInt("id", -1)
 
                 totalPrice += (itemQuantity * itemPrice).toInt()
 
@@ -300,6 +410,36 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                 itemView.findViewById<TextView>(R.id.orderName).text = itemName
                 itemView.findViewById<TextView>(R.id.value1).text = "$itemQuantity"
                 itemView.findViewById<TextView>(R.id.orderPrice).text = "₱${(itemQuantity * itemPrice).toInt()}.00"
+
+                // Inside updateCartUI(), replace the button logic:
+                val subtractButton = itemView.findViewById<FrameLayout>(R.id.subtract1)
+                val addButton = itemView.findViewById<FrameLayout>(R.id.add1)
+
+                subtractButton.setOnClickListener {
+                    if (itemQuantity > 0) {
+                        val oldQuantity = itemQuantity // Store the original quantity
+                        val newQuantity = itemQuantity - 1
+                        Log.d("SubtractButton", "Old Quantity: $oldQuantity, New Quantity: $newQuantity, Product ID: $productId")
+                        item.putInt("quantity", newQuantity) // Update locally first
+                        if (newQuantity == 0) {
+                            removeItemFromCart(userId, productId, index)
+                        } else {
+                            updateCart(userId, productId, newQuantity, index, oldQuantity)
+                        }
+                    }
+                }
+
+                addButton.setOnClickListener {
+                    if (itemQuantity < 10) {
+                        val oldQuantity = itemQuantity // Store the original quantity
+                        val newQuantity = itemQuantity + 1
+                        Log.d("AddButton", "Old Quantity: $oldQuantity, New Quantity: $newQuantity, Product ID: $productId")
+                        item.putInt("quantity", newQuantity) // Update locally first
+                        updateCart(userId, productId, newQuantity, index, oldQuantity)
+                    } else {
+                        Toast.makeText(this, "Cannot add more than 10 of $itemName", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
                 if (itemFile.isNotEmpty()) {
                     val resourceId = resources.getIdentifier(itemFile, "drawable", packageName)
@@ -315,4 +455,3 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
         }
     }
 }
-

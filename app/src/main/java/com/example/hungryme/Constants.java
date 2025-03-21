@@ -1,7 +1,7 @@
 package com.example.hungryme;
 
 public class Constants {
-    private static final String ROOT_URL = "http://192.168.228.56/HungryMe/v1/";
+    private static final String ROOT_URL = "http://192.168.18.10/HungryMe/v1/";
     public static final String URL_REGISTER = ROOT_URL + "registerUser.php";
     public static final String URL_LOGIN = ROOT_URL + "userLogin.php";
     public static final String URL_CHECK_EMAIL = ROOT_URL + "checkEmail.php";
@@ -19,4 +19,6 @@ public class Constants {
     public static final String URL_ADD_TO_FAVORITES = ROOT_URL + "addToFavorites.php";
     public static final String URL_REMOVE_FROM_FAVORITES = ROOT_URL + "removeFromFavorites.php";
     public static final String URL_GET_FAVORITES = ROOT_URL + "fetch_favorites.php";
+    public static final String URL_DELETE_ITEM_FROM_CART = ROOT_URL + "delete_cart_item.php";
+    public static final String URL_UPDATE_CART_ITEM = ROOT_URL + "update_cart_item.php";
 }
