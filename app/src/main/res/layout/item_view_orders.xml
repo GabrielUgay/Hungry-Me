@@ -20,7 +20,7 @@
 
         <!-- Order ID -->
         <TextView
-            android:id="@+id/orderIdText"
+            android:id="@+id/orderNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Order #123"
@@ -39,12 +39,23 @@
             android:textSize="14sp"
             android:textColor="#757575"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/orderIdText"
+            app:layout_constraintTop_toBottomOf="@id/orderNameText"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/orderQuantityText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quantity: 1"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderDateText"
             android:layout_marginTop="4dp" />
 
         <!-- Total Amount -->
         <TextView
-            android:id="@+id/orderTotalText"
+            android:id="@+id/orderPriceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="₱150.00"
@@ -53,31 +64,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Status -->
-        <TextView
-            android:id="@+id/orderStatusText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pending"
-            android:textSize="14sp"
-            android:textColor="#FFA500"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/orderTotalText"
-            android:layout_marginTop="4dp" />
-
-        <!-- Item Summary -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/viewOrdersButton"
-            android:layout_width="140dp"
-            android:layout_height="50dp"
-            android:text="View Orders"
-            android:textSize="14sp"
-            app:cornerRadius="8dp"
-            android:backgroundTint="#47DC1E"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/orderDateText"
-            android:layout_marginTop="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

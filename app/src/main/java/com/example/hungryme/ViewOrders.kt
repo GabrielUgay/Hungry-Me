@@ -15,43 +15,43 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.material.button.MaterialButton
 import org.json.JSONException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class RecentOrders : AppCompatActivity() {
+class ViewOrders : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyStateText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recent_orders)
+        setContentView(R.layout.activity_view_orders)
 
-        recyclerView = findViewById(R.id.recentOrdersRecyclerView)
+        recyclerView = findViewById(R.id.viewOrdersRecyclerView) // Updated to match your XML
         recyclerView.layoutManager = LinearLayoutManager(this)
         emptyStateText = findViewById(R.id.emptyStateText)
 
         val backButton = findViewById<ImageView>(R.id.backButton)
         backButton.setOnClickListener { finish() }
 
-        val user = intent.getStringExtra("user")
         val userId = intent.getIntExtra("user_id", -1)
-        val restaurant = intent.getStringExtra("restaurant") ?: "No restaurant indicated"
+        val orderId = intent.getIntExtra("order_id", -1)
 
-        if (userId == -1) {
-            emptyStateText.text = "Invalid user ID"
+        Log.d("ViewOrders", "user_id: $userId, order_id: $orderId") // Debug Intent extras
+
+        if (userId == -1 || orderId == -1) {
+            emptyStateText.text = "Invalid user or order ID"
             emptyStateText.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
             return
         }
 
-        fetchOrders(userId.toString(), restaurant)
+        fetchOrderItems(userId.toString(), orderId.toString())
     }
 
-    private fun fetchOrders(userId: String, restaurant: String) {
-        val url = "${Constants.URL_FETCH_ORDERS}?user_id=$userId&restaurant=$restaurant"
+    private fun fetchOrderItems(userId: String, orderId: String) {
+        val url = "${Constants.URL_VIEW_ORDERS}?user_id=$userId&order_id=$orderId"
         val requestQueue = Volley.newRequestQueue(this)
 
         val jsonObjectRequest = JsonObjectRequest(
@@ -67,34 +67,33 @@ class RecentOrders : AppCompatActivity() {
                         return@Listener
                     }
 
-                    val ordersArray = response.getJSONArray("orders")
-                    val ordersList = mutableListOf<Map<String, String>>()
+                    val itemsArray = response.getJSONArray("order_items")
+                    val orderItemsList = mutableListOf<Map<String, String>>()
 
-                    for (i in 0 until ordersArray.length()) {
-                        val orderJson = ordersArray.getJSONObject(i)
-                        val order = mapOf(
-                            "id" to orderJson.getString("id"),
-                            "created_at" to orderJson.getString("created_at"),
-                            "total_price" to orderJson.getString("total_price"),
-                            "status" to orderJson.getString("status")
+                    for (i in 0 until itemsArray.length()) {
+                        val itemJson = itemsArray.getJSONObject(i)
+                        val item = mapOf(
+                            "item_name" to itemJson.getString("item_name"),
+                            "quantity" to itemJson.getString("quantity"),
+                            "subtotal" to itemJson.getString("subtotal"),
+                            "created_at" to itemJson.getString("created_at")
                         )
-                        ordersList.add(order)
+                        orderItemsList.add(item)
                     }
 
-                    // Pass userId to the adapter
-                    recyclerView.adapter = RecentOrdersAdapter(ordersList, intent.getIntExtra("user_id", -1))
+                    recyclerView.adapter = OrderItemsAdapter(orderItemsList)
                     recyclerView.visibility = View.VISIBLE
                     emptyStateText.visibility = View.GONE
                 } catch (e: JSONException) {
                     Log.e("API_ERROR", "Parsing error: ${e.message}")
-                    emptyStateText.text = "Error parsing orders"
+                    emptyStateText.text = "Error parsing order items"
                     emptyStateText.visibility = View.VISIBLE
                     recyclerView.visibility = View.GONE
                 }
             },
             Response.ErrorListener { error ->
                 Log.e("API_ERROR", "Failed request: ${error.message}")
-                emptyStateText.text = "Failed to fetch orders"
+                emptyStateText.text = "Failed to fetch order items: ${error.message}"
                 emptyStateText.visibility = View.VISIBLE
                 recyclerView.visibility = View.GONE
             }
@@ -104,54 +103,40 @@ class RecentOrders : AppCompatActivity() {
     }
 }
 
-class RecentOrdersAdapter(private val orders: List<Map<String, String>>, private val userId: Int) :
-    RecyclerView.Adapter<RecentOrdersAdapter.ViewHolder>() {
+class OrderItemsAdapter(private val orderItems: List<Map<String, String>>) :
+    RecyclerView.Adapter<OrderItemsAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val orderIdText: TextView = itemView.findViewById(R.id.orderIdText)
+        val orderNameText: TextView = itemView.findViewById(R.id.orderNameText)
         val orderDateText: TextView = itemView.findViewById(R.id.orderDateText)
-        val orderTotalText: TextView = itemView.findViewById(R.id.orderTotalText)
-        val orderStatusText: TextView = itemView.findViewById(R.id.orderStatusText)
-        val viewOrdersButton: MaterialButton = itemView.findViewById(R.id.viewOrdersButton)
+        val orderQuantityText: TextView = itemView.findViewById(R.id.orderQuantityText)
+        val orderPriceText: TextView = itemView.findViewById(R.id.orderPriceText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_recent_orders, parent, false)
+            .inflate(R.layout.item_view_orders, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val order = orders[position]
-        val orderId = order["id"]?.toIntOrNull() ?: -1
+        val item = orderItems[position]
 
-        // Parse the timestamp from the database
-        val createdAt = order["created_at"] ?: ""
+        holder.orderNameText.text = item["item_name"]
+
+        val createdAt = item["created_at"] ?: ""
         try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val date = inputFormat.parse(createdAt) ?: Date()
-
             val dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-            holder.orderIdText.text = dateFormat.format(date)
-
-            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-            holder.orderDateText.text = timeFormat.format(date)
+            holder.orderDateText.text = dateFormat.format(date)
         } catch (e: Exception) {
-            holder.orderIdText.text = "Order #$createdAt"
             holder.orderDateText.text = createdAt
         }
 
-        holder.orderTotalText.text = "₱${order["total_price"]}"
-        holder.orderStatusText.text = order["status"]
-
-        // Everytime i click this and go to ViewOrders.kt, IT ALWAYS CRASHES!!!!!!!
-        holder.viewOrdersButton.setOnClickListener {
-            val intent = Intent(holder.itemView.context, ViewOrders::class.java)
-            intent.putExtra("user_id", userId)
-            intent.putExtra("order_id", orderId)
-            holder.itemView.context.startActivity(intent)
-        }
+        holder.orderQuantityText.text = "Quantity: ${item["quantity"]}"
+        holder.orderPriceText.text = "₱${String.format("%.2f", item["subtotal"]?.toFloatOrNull() ?: 0f)}"
     }
 
-    override fun getItemCount(): Int = orders.size
+    override fun getItemCount(): Int = orderItems.size
 }
