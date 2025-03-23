@@ -21,4 +21,6 @@ public class Constants {
     public static final String URL_GET_FAVORITES = ROOT_URL + "fetch_favorites.php";
     public static final String URL_DELETE_ITEM_FROM_CART = ROOT_URL + "delete_cart_item.php";
     public static final String URL_UPDATE_CART_ITEM = ROOT_URL + "update_cart_item.php";
+    public static final String URL_ADD_ORDER_ITEMS = ROOT_URL + "addOrderItems.php";
+    public static final String URL_FETCH_ORDERS = ROOT_URL + "fetchOrders.php";
 }

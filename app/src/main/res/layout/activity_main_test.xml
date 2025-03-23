@@ -552,6 +552,7 @@
                 android:layout_marginStart="40dp" />
 
             <ImageView
+                android:id="@+id/profilePic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/user_profile"
@@ -567,6 +568,7 @@
                 android:layout_marginStart="120dp" />
 
             <ImageView
+                android:id="@+id/recentOrders"
                 android:layout_gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

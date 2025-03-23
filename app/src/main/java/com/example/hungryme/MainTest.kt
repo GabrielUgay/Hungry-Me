@@ -1,5 +1,6 @@
 package com.example.hungryme
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -362,6 +363,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         }
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -387,6 +389,14 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         val cartPage = findViewById<FrameLayout>(R.id.cartPage)
         cartPage.setOnClickListener {
             goToCartPage(restaurant)
+        }
+
+        val profilePic = findViewById<ImageView>(R.id.profilePic)
+        profilePic.setOnClickListener {
+            val user = intent.getStringExtra("user")
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.putExtra("user", user)
+            startActivity(intent)
         }
 
         val firstChoice = findViewById<ImageView>(R.id.firstChoice)
@@ -491,6 +501,49 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         filteredItemList.addAll(itemList)
         itemAdapter = ItemAdapter(filteredItemList, filteredItemList, cartItems, this, user, this, this)
         recyclerView.adapter = itemAdapter
+
+        val recentOrders = findViewById<ImageView>(R.id.recentOrders)
+        recentOrders.setOnClickListener {
+            val url = "${Constants.URL_GET_USER_ID}?username=$user"
+            val requestQueue = Volley.newRequestQueue(this)
+
+            val stringRequest = StringRequest(
+                Request.Method.GET, url,
+                { response ->
+                    try {
+                        Log.d("RecentOrders", "Raw API Response: $response")
+                        val jsonObject = JSONObject(response.trim())
+                        val userId = jsonObject.optInt("user_id")
+
+                        if (userId == -1) {
+                            Log.e("RecentOrders", "Invalid response: Missing 'userId'")
+                            Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
+                            return@StringRequest
+                        }
+
+                        Log.d("RecentOrders", "Fetched UserID: $userId")
+                        val intent = Intent(this, RecentOrders::class.java).apply {
+                            putExtra("user", user)
+                            putExtra("restaurant", restaurant)
+                            putExtra("user_id", userId)
+                        }
+                        startActivity(intent)
+                    } catch (e: JSONException) {
+                        Log.e("RecentOrders", "JSON Parsing error: ${e.message}")
+                        Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                { error ->
+                    Log.e("RecentOrders", "Volley error: ${error.message}")
+                    Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
+                    error.networkResponse?.let {
+                        Log.e("RecentOrders", "Error Response Code: ${it.statusCode}")
+                        Log.e("RecentOrders", "Error Response Data: ${String(it.data)}")
+                    }
+                }
+            )
+            requestQueue.add(stringRequest)
+        }
 
         fetchItems(restaurant)
     }
