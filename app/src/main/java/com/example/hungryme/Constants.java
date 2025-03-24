@@ -24,4 +24,5 @@ public class Constants {
     public static final String URL_ADD_ORDER_ITEMS = ROOT_URL + "addOrderItems.php";
     public static final String URL_FETCH_ORDERS = ROOT_URL + "fetchOrders.php";
     public static final String URL_VIEW_ORDERS = ROOT_URL + "viewOrders.php";
+    public static final String URL_PROFILE_INFO = ROOT_URL + "profileInfo.php";
 }

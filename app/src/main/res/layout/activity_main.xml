@@ -27,7 +27,7 @@
         android:layout_height="52dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/rectangle1"
-        android:backgroundTint="#008700"
+        android:backgroundTint="#3FD721"
         android:contentDescription="Login Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

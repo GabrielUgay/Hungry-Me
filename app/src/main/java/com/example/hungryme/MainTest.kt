@@ -391,14 +391,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             goToCartPage(restaurant)
         }
 
-        val profilePic = findViewById<ImageView>(R.id.profilePic)
-        profilePic.setOnClickListener {
-            val user = intent.getStringExtra("user")
-            val intent = Intent(this, ProfileActivity::class.java)
-            intent.putExtra("user", user)
-            startActivity(intent)
-        }
-
         searchBar = findViewById(R.id.searchBar)
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -470,6 +462,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         recyclerView.adapter = itemAdapter
 
         val recentOrders = findViewById<ImageView>(R.id.recentOrders)
+        val profilePic = findViewById<ImageView>(R.id.profilePic)
         recentOrders.setOnClickListener {
             val url = "${Constants.URL_GET_USER_ID}?username=$user"
             val requestQueue = Volley.newRequestQueue(this)
@@ -506,6 +499,48 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                     error.networkResponse?.let {
                         Log.e("RecentOrders", "Error Response Code: ${it.statusCode}")
                         Log.e("RecentOrders", "Error Response Data: ${String(it.data)}")
+                    }
+                }
+            )
+            requestQueue.add(stringRequest)
+        }
+
+        profilePic.setOnClickListener {
+            val url = "${Constants.URL_GET_USER_ID}?username=$user"
+            val requestQueue = Volley.newRequestQueue(this)
+
+            val stringRequest = StringRequest(
+                Request.Method.GET, url,
+                { response ->
+                    try {
+                        Log.d("ProfileActivity", "Raw API Response: $response")
+                        val jsonObject = JSONObject(response.trim())
+                        val userId = jsonObject.optInt("user_id")
+
+                        if (userId == -1) {
+                            Log.e("RecentOrders", "Invalid response: Missing 'userId'")
+                            Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
+                            return@StringRequest
+                        }
+
+                        Log.d("ProfileActivity", "Fetched UserID: $userId")
+                        val intent = Intent(this, ProfileActivity::class.java).apply {
+                            putExtra("user", user)
+                            putExtra("restaurant", restaurant)
+                            putExtra("user_id", userId)
+                        }
+                        startActivity(intent)
+                    } catch (e: JSONException) {
+                        Log.e("ProfileActivity", "JSON Parsing error: ${e.message}")
+                        Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                { error ->
+                    Log.e("ProfileActivity", "Volley error: ${error.message}")
+                    Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
+                    error.networkResponse?.let {
+                        Log.e("ProfileActivity", "Error Response Code: ${it.statusCode}")
+                        Log.e("ProfileActivity", "Error Response Data: ${String(it.data)}")
                     }
                 }
             )
