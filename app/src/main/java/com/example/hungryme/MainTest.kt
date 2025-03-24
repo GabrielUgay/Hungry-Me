@@ -399,17 +399,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             startActivity(intent)
         }
 
-        val firstChoice = findViewById<ImageView>(R.id.firstChoice)
-        val secondChoice = findViewById<ImageView>(R.id.secondChoice)
-        val thirdChoice = findViewById<ImageView>(R.id.thirdChoice)
-        val fourthChoice = findViewById<ImageView>(R.id.fourthChoice)
-
-        firstChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-        val greenColor = Color.parseColor("#4CAF50")
-        secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-        thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-        fourthChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-
         searchBar = findViewById(R.id.searchBar)
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -440,19 +429,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         }
 
         homePage2.setOnClickListener {
-            isShowingFavorites = false
-            favs.clearColorFilter()
-            when (lastSelectedCategory) {
-                "All" -> fetchItems(restaurant)
-                "Dish" -> fetchItemsByCategory(restaurant, "Dish")
-                "Drinks" -> fetchItemsByCategory(restaurant, "Drinks")
-                "Desserts" -> fetchItemsByCategory(restaurant, "Desserts")
-            }
-            firstChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-            val greenColor = Color.parseColor("#4CAF50")
-            secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-            thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-            fourthChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
+            finish()
         }
 
         favs.setOnClickListener {
@@ -460,11 +437,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                 isShowingFavorites = true
                 favs.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
                 filterFavorites(lastSelectedCategory ?: "All")
-                fourthChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-                val greenColor = Color.parseColor("#4CAF50")
-                secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-                thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-                firstChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
             } else {
                 isShowingFavorites = false
                 favs.clearColorFilter()
@@ -474,11 +446,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                     "Drinks" -> fetchItemsByCategory(restaurant, "Drinks")
                     "Desserts" -> fetchItemsByCategory(restaurant, "Desserts")
                 }
-                firstChoice.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-                val greenColor = Color.parseColor("#4CAF50")
-                secondChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-                thirdChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
-                fourthChoice.setColorFilter(greenColor, PorterDuff.Mode.SRC_IN)
             }
         }
 
