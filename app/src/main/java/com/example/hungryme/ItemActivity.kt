@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.*
+import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
@@ -12,7 +13,6 @@ import org.json.JSONObject
 class ItemActivity : AppCompatActivity() {
 
     private lateinit var requestQueue: RequestQueue
-    private var userId: Int? = null
     private var numberItems = 0
     private var pricePerItem = 0.0
 
@@ -22,7 +22,9 @@ class ItemActivity : AppCompatActivity() {
 
         requestQueue = Volley.newRequestQueue(this)
 
-        val user = intent.getStringExtra("user")
+        // Retrieve user_id as an Int from the intent
+        val userId = intent.getIntExtra("user_id", -1)
+
         val itemName = findViewById<TextView>(R.id.itemName)
         val itemDesc = findViewById<TextView>(R.id.itemDesc)
         val imageFile = findViewById<ImageView>(R.id.imageFile)
@@ -60,8 +62,8 @@ class ItemActivity : AppCompatActivity() {
         }
 
         addToCart.setOnClickListener {
-            if (userId == null) {
-                Log.e("ItemActivity", "User ID is null. Cannot add to cart.")
+            if (userId == -1) {
+                Log.e("ItemActivity", "Invalid user_id: $userId. Cannot add to cart.")
                 Toast.makeText(this, "User not identified. Please log in.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -71,35 +73,10 @@ class ItemActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            addToCart(userId!!, itemId, numberItems, restaurant)
+            addToCart(userId, itemId, numberItems, restaurant)
         }
 
         backButton.setOnClickListener { finish() }
-
-        user?.let { getUserId(it) }
-    }
-
-    private fun getUserId(username: String) {
-        val url = "${Constants.URL_GET_USER_ID}?username=$username"
-        Log.d("ItemActivity", "Fetching User ID from: $url")
-
-        val stringRequest = StringRequest(Request.Method.GET, url,
-            { response ->
-                try {
-                    val jsonResponse = JSONObject(response)
-                    if (jsonResponse.getBoolean("success")) {
-                        userId = jsonResponse.getInt("user_id")
-                        Log.d("ItemActivity", "User ID fetched successfully: $userId")
-                    } else {
-                        Log.e("ItemActivity", "Failed to fetch user ID: ${jsonResponse.getString("message")}")
-                    }
-                } catch (e: Exception) {
-                    Log.e("ItemActivity", "JSON Parsing Error: ${e.message}")
-                }
-            },
-            { error -> Log.e("ItemActivity", "Volley Error: ${error.message}") })
-
-        requestQueue.add(stringRequest)
     }
 
     private fun updatePrice(portion: TextView, totalPrice: TextView) {
@@ -121,13 +98,16 @@ class ItemActivity : AppCompatActivity() {
                         Toast.makeText(this, "Item added to cart.", Toast.LENGTH_SHORT).show()
                     } else {
                         Log.e("ItemActivity", "Failed to add item: ${jsonResponse.getString("message")}")
+                        Toast.makeText(this, "Failed to add item: ${jsonResponse.getString("message")}", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     Log.e("ItemActivity", "JSON Parsing Error: ${e.message}")
+                    Toast.makeText(this, "Error parsing response", Toast.LENGTH_SHORT).show()
                 }
             },
             { error ->
                 Log.e("ItemActivity", "Volley Error: ${error.message}")
+                Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_SHORT).show()
             }) {
             override fun getParams(): MutableMap<String, String> {
                 return hashMapOf(

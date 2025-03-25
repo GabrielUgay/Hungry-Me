@@ -27,7 +27,6 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
@@ -55,8 +54,8 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     private var itemPrices = mutableListOf<Double>()
     private var itemCounts = mutableListOf<Int>()
 
-    var favoriteItems = mutableSetOf<Int>() // Shared favorite items
-    var isShowingFavorites = false // Track if we're in favorites mode
+    var favoriteItems = mutableSetOf<Int>()
+    var isShowingFavorites = false
 
     private val cartItems = mutableListOf<Bundle>()
 
@@ -108,55 +107,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                 foodSelectionLayout.addView(itemButton)
             }
         }
-    }
-
-    private fun fetchUserId(username: String, callback: (Int) -> Unit) {
-        if (username.isEmpty()) {
-            Log.e("ERROR", "Username is empty, cannot fetch user ID")
-            callback(-1)
-            return
-        }
-
-        val url = "${Constants.URL_GET_USER_ID}?username=$username"
-        Log.d("DEBUG", "Attempting to fetch user ID for username: '$username' from URL: $url")
-
-        val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET, url, null,
-            Response.Listener { response ->
-                Log.d("DEBUG", "Raw API Response: $response")
-                try {
-                    val error = response.optBoolean("error", true)
-                    if (!error) {
-                        val userId = response.optInt("id", -1)
-                        if (userId != -1) {
-                            Log.d("DEBUG", "User ID successfully fetched: $userId")
-                            callback(userId)
-                        } else {
-                            Log.e("ERROR", "Response contains no valid 'id' field or ID is -1")
-                            callback(-1)
-                        }
-                    } else {
-                        val message = response.optString("message", "Unknown error")
-                        Log.e("ERROR", "API returned error: $message")
-                        callback(-1)
-                    }
-                } catch (e: JSONException) {
-                    Log.e("ERROR", "JSON Parsing Exception: ${e.message}")
-                    e.printStackTrace()
-                    callback(-1)
-                }
-            },
-            Response.ErrorListener { error ->
-                Log.e("API_ERROR", "Volley Error: ${error.message ?: "Unknown error"}")
-                error.networkResponse?.let {
-                    val errorBody = String(it.data, Charsets.UTF_8)
-                    Log.e("API_ERROR", "Error response body: $errorBody")
-                }
-                callback(-1)
-            }
-        )
-        requestQueue.add(jsonObjectRequest)
     }
 
     private fun resetButtonColors() {
@@ -212,14 +162,10 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
                 val box = findViewById<ImageView>(boxes[i])
                 if (box != null) {
                     if (i < stampCount) {
-                        Log.d("DEBUG", "Setting box ${i + 1} to BLACK")
                         box.setImageResource(R.drawable.black_comp)
                     } else {
-                        Log.d("DEBUG", "Setting box ${i + 1} to WHITE")
                         box.setImageResource(R.drawable.white_comp)
                     }
-                } else {
-                    Log.e("ERROR", "Box ${i + 1} not found in layout")
                 }
             }
         }
@@ -287,62 +233,33 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
     }
 
     private fun goToCartPage(restaurant: String) {
-        val user = intent.getStringExtra("user")
-        val url = "${Constants.URL_GET_USER_ID}?username=$user"
-        val requestQueue = Volley.newRequestQueue(this)
+        val user = intent.getStringExtra("user") ?: ""
+        val userId = intent.getIntExtra("user_id", -1)
 
-        val stringRequest = StringRequest(
-            Request.Method.GET, url,
-            { response ->
-                try {
-                    Log.d("CartActivity", "Raw API Response: $response")
-                    val jsonObject = JSONObject(response.trim())
-                    val userId = jsonObject.optInt("user_id")
+        if (userId == -1) {
+            Log.e("MainTest", "Invalid user_id: $userId")
+            Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-                    if (userId == -1) {
-                        Log.e("CartActivity", "Invalid response: Missing 'userId'")
-                        Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
-                        return@StringRequest
-                    }
-
-                    Log.d("CartActivity", "Fetched UserID: $userId")
-                    val intent = Intent(this, CartActivity::class.java).apply {
-                        putExtra("user", user)
-                        putExtra("restaurant", restaurant)
-                        putExtra("user_id", userId)
-                    }
-                    startActivity(intent)
-                } catch (e: JSONException) {
-                    Log.e("CartActivity", "JSON Parsing error: ${e.message}")
-                    Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
-                }
-            },
-            { error ->
-                Log.e("CartActivity", "Volley error: ${error.message}")
-                Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
-                error.networkResponse?.let {
-                    Log.e("CartActivity", "Error Response Code: ${it.statusCode}")
-                    Log.e("CartActivity", "Error Response Data: ${String(it.data)}")
-                }
-            }
-        )
-        requestQueue.add(stringRequest)
+        val intent = Intent(this, CartActivity::class.java).apply {
+            putExtra("user", user)
+            putExtra("restaurant", restaurant)
+            putExtra("user_id", userId)
+        }
+        Log.d("MainTest", "Going to CartActivity with user_id: $userId, user: $user")
+        startActivity(intent)
     }
 
     private fun filterFavorites(category: String) {
         filteredItemList.clear()
-
         val itemsToShow = if (category == "All") {
             itemList.filter { favoriteItems.contains(it.id) }
         } else {
-            itemList.filter {
-                favoriteItems.contains(it.id) && it.category == category
-            }
+            itemList.filter { favoriteItems.contains(it.id) && it.category == category }
         }
-
         filteredItemList.addAll(itemsToShow)
         itemAdapter.notifyDataSetChanged()
-
         if (filteredItemList.isEmpty()) {
             Toast.makeText(this, "No favorite items in this category", Toast.LENGTH_SHORT).show()
         }
@@ -363,6 +280,7 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         }
     }
 
+    // In MainTest.kt, update the ItemAdapter initialization in onCreate
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -376,7 +294,14 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
 
         val restaurant = intent.getStringExtra("restaurant") ?: "Default Restaurant"
         val user = intent.getStringExtra("user") ?: ""
-        Log.d("DEBUG", "Initial user value from Intent: '$user'")
+        val userId = intent.getIntExtra("user_id", -1)
+        Log.d("MainTest", "Initial values - user_id: $userId, user: $user, restaurant: $restaurant")
+
+        Toast.makeText(this, "$userId Yehey!", Toast.LENGTH_SHORT).show()
+
+        if (userId != -1) {
+            fetchStamps(userId, restaurant)
+        }
 
         all = findViewById(R.id.all)
         dish = findViewById(R.id.dish)
@@ -441,16 +366,6 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
             }
         }
 
-        if (user.isNotEmpty()) {
-            fetchUserId(user) { userId ->
-                if (userId != -1) {
-                    fetchStamps(userId, restaurant)
-                } else {
-                    Log.e("ERROR", "Failed to fetch user ID")
-                }
-            }
-        }
-
         checkOrder = findViewById(R.id.checkOrder)
         pushDown = findViewById(R.id.pushDown)
 
@@ -458,93 +373,41 @@ class MainTest : AppCompatActivity(), OnItemQuantityChangeListener {
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         filteredItemList.addAll(itemList)
-        itemAdapter = ItemAdapter(filteredItemList, filteredItemList, cartItems, this, user, this, this)
+        itemAdapter = ItemAdapter(filteredItemList, filteredItemList, cartItems, this, user, userId, this, this) // Pass userId here
         recyclerView.adapter = itemAdapter
 
         val recentOrders = findViewById<ImageView>(R.id.recentOrders)
         val profilePic = findViewById<ImageView>(R.id.profilePic)
         recentOrders.setOnClickListener {
-            val url = "${Constants.URL_GET_USER_ID}?username=$user"
-            val requestQueue = Volley.newRequestQueue(this)
+            if (userId == -1) {
+                Log.e("MainTest", "Invalid user_id for RecentOrders: $userId")
+                Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            val stringRequest = StringRequest(
-                Request.Method.GET, url,
-                { response ->
-                    try {
-                        Log.d("RecentOrders", "Raw API Response: $response")
-                        val jsonObject = JSONObject(response.trim())
-                        val userId = jsonObject.optInt("user_id")
-
-                        if (userId == -1) {
-                            Log.e("RecentOrders", "Invalid response: Missing 'userId'")
-                            Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
-                            return@StringRequest
-                        }
-
-                        Log.d("RecentOrders", "Fetched UserID: $userId")
-                        val intent = Intent(this, RecentOrders::class.java).apply {
-                            putExtra("user", user)
-                            putExtra("restaurant", restaurant)
-                            putExtra("user_id", userId)
-                        }
-                        startActivity(intent)
-                    } catch (e: JSONException) {
-                        Log.e("RecentOrders", "JSON Parsing error: ${e.message}")
-                        Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                { error ->
-                    Log.e("RecentOrders", "Volley error: ${error.message}")
-                    Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
-                    error.networkResponse?.let {
-                        Log.e("RecentOrders", "Error Response Code: ${it.statusCode}")
-                        Log.e("RecentOrders", "Error Response Data: ${String(it.data)}")
-                    }
-                }
-            )
-            requestQueue.add(stringRequest)
+            val intent = Intent(this, RecentOrders::class.java).apply {
+                putExtra("user", user)
+                putExtra("restaurant", restaurant)
+                putExtra("user_id", userId)
+            }
+            Log.d("MainTest", "Going to RecentOrders with user_id: $userId, user: $user")
+            startActivity(intent)
         }
 
         profilePic.setOnClickListener {
-            val url = "${Constants.URL_GET_USER_ID}?username=$user"
-            val requestQueue = Volley.newRequestQueue(this)
+            if (userId == -1) {
+                Log.e("MainTest", "Invalid user_id for ProfileActivity: $userId")
+                Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            val stringRequest = StringRequest(
-                Request.Method.GET, url,
-                { response ->
-                    try {
-                        Log.d("ProfileActivity", "Raw API Response: $response")
-                        val jsonObject = JSONObject(response.trim())
-                        val userId = jsonObject.optInt("user_id")
-
-                        if (userId == -1) {
-                            Log.e("RecentOrders", "Invalid response: Missing 'userId'")
-                            Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
-                            return@StringRequest
-                        }
-
-                        Log.d("ProfileActivity", "Fetched UserID: $userId")
-                        val intent = Intent(this, ProfileActivity::class.java).apply {
-                            putExtra("user", user)
-                            putExtra("restaurant", restaurant)
-                            putExtra("user_id", userId)
-                        }
-                        startActivity(intent)
-                    } catch (e: JSONException) {
-                        Log.e("ProfileActivity", "JSON Parsing error: ${e.message}")
-                        Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                { error ->
-                    Log.e("ProfileActivity", "Volley error: ${error.message}")
-                    Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
-                    error.networkResponse?.let {
-                        Log.e("ProfileActivity", "Error Response Code: ${it.statusCode}")
-                        Log.e("ProfileActivity", "Error Response Data: ${String(it.data)}")
-                    }
-                }
-            )
-            requestQueue.add(stringRequest)
+            val intent = Intent(this, ProfileActivity::class.java).apply {
+                putExtra("user", user)
+                putExtra("restaurant", restaurant)
+                putExtra("user_id", userId)
+            }
+            Log.d("MainTest", "Going to ProfileActivity with user_id: $userId, user: $user")
+            startActivity(intent)
         }
 
         fetchItems(restaurant)

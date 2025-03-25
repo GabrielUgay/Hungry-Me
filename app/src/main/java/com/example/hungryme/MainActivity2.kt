@@ -3,7 +3,7 @@ package com.example.hungryme
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import org.json.JSONObject
 
@@ -41,7 +40,6 @@ class MainActivity2 : AppCompatActivity() {
         // Initialize Views
         editTextUsername = findViewById(R.id.editTextUsername)
         editTextPassword = findViewById(R.id.editTextPassword)
-
         signUp = findViewById(R.id.register)
         forgotPassword = findViewById(R.id.forgotPassword)
         loginBtn = findViewById(R.id.login)
@@ -76,43 +74,46 @@ class MainActivity2 : AppCompatActivity() {
         progressDialog.show()
 
         val stringRequest = object : StringRequest(
-            Request.Method.POST,
+            Method.POST,
             Constants.URL_LOGIN,
             Response.Listener { response ->
                 progressDialog.dismiss()
                 try {
-                    // Debugging - Print raw response
-                    println("DEBUG: Raw Response -> $response")
-
+                    Log.d("MainActivity2", "Login Raw Response -> $response")
                     val obj = JSONObject(response)
 
                     if (!obj.getBoolean("error")) {
-                        println("DEBUG: Login successful, user data -> ${obj.toString()}")
+                        val userId = obj.getInt("id")
+                        val usernameFromServer = obj.getString("username")
+                        val email = obj.getString("email")
 
-                        SharedPrefManager.getInstance(applicationContext).userLogin(
-                            obj.getInt("id"),
-                            obj.getString("username"),
-                            obj.getString("email")
-                        )
+                        Log.d("MainActivity2", "Login successful, user data -> id: $userId, username: $usernameFromServer, email: $email")
 
-                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                        val user = editTextUsername.text.toString().trim()
-                        val intent = Intent(this, MainActivity7::class.java)
-                        intent.putExtra("user", user)
+                        // Store user data in SharedPreferences
+                        SharedPrefManager.getInstance(applicationContext).userLogin(userId, usernameFromServer, email)
+
+                        // Pass both user_id and username to the next activity
+                        val intent = Intent(this, MainActivity7::class.java).apply {
+                            putExtra("user_id", userId)
+                            putExtra("user", usernameFromServer)
+                        }
+                        Log.d("MainActivity2", "Starting MainActivity7 with user_id: $userId, user: $usernameFromServer")
                         startActivity(intent)
                         finish()
+
+                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
                     } else {
-                        println("DEBUG: Login failed, message -> ${obj.getString("message")}")
+                        Log.d("MainActivity2", "Login failed, message -> ${obj.getString("message")}")
                         Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(this, "Error parsing response", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error parsing response: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             },
             Response.ErrorListener { error ->
                 progressDialog.dismiss()
-                println("DEBUG: Network error -> ${error.message}")
+                Log.e("MainActivity2", "Network error -> ${error.message}")
                 Toast.makeText(this, "Login failed: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         ) {
@@ -124,5 +125,4 @@ class MainActivity2 : AppCompatActivity() {
 
         RequestHandler.getInstance(this).addToRequestQueue(stringRequest)
     }
-
 }

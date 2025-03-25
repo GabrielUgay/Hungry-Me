@@ -41,9 +41,11 @@ class MainActivity12 : AppCompatActivity() {
         homePage = findViewById(R.id.homePage)
         homePage.setOnClickListener {
             val user = intent.getStringExtra("user")
+            val userId = intent.getIntExtra("user_id", -1)
             val intent = Intent(this, MainActivity7::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra("user", user)
+            intent.putExtra("user_id", userId)
             startActivity(intent)
             finish()
         }

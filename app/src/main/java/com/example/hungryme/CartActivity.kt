@@ -36,6 +36,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
         val restaurant = intent.getStringExtra("restaurant") ?: ""
 
         Log.d("CartActivity", "Received User: $user, UserID: $userId, Restaurant: $restaurant")
+        Toast.makeText(this, "$userId Cart", Toast.LENGTH_SHORT).show()
 
         if (userId != -1) {
             fetchCartData(userId, restaurant)
@@ -46,6 +47,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
         findViewById<ImageView>(R.id.closeCart).setOnClickListener {
             val intent = Intent(this, MainActivity7::class.java).apply {
                 putExtra("user", user)
+                putExtra("user_id", userId)
             }
             startActivity(intent)
             finish()
@@ -122,6 +124,7 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
                                                                                                             putExtra("totalPrice", totalPrice)
                                                                                                             putExtra("cartItems", ArrayList(cartItems))
                                                                                                             putExtra("user", user)
+                                                                                                            putExtra("user_id", userId)
                                                                                                         })
                                                                                                     } else {
                                                                                                         Toast.makeText(this, "Cart deletion failed: ${deleteJson.getString("message")}", Toast.LENGTH_SHORT).show()

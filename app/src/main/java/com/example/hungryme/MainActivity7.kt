@@ -12,20 +12,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import org.json.JSONException
-import org.json.JSONObject
 
 class MainActivity7 : AppCompatActivity() {
-    lateinit var mangInasal : LinearLayout
-    lateinit var jollibee : LinearLayout
+    lateinit var mangInasal: LinearLayout
+    lateinit var jollibee: LinearLayout
     lateinit var greenwichLinearLayout: LinearLayout
 
-    lateinit var mangInasalCart : FrameLayout
-    lateinit var jollibeeCart : FrameLayout
-    lateinit var greenwichCart : FrameLayout
+    lateinit var mangInasalCart: FrameLayout
+    lateinit var jollibeeCart: FrameLayout
+    lateinit var greenwichCart: FrameLayout
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,86 +46,67 @@ class MainActivity7 : AppCompatActivity() {
         jollibee.setOnClickListener { goToPageTen() }
         greenwichLinearLayout.setOnClickListener { goToPageEleven() }
 
+        val userId = intent.getIntExtra("user_id", -1)
+        val user = intent.getStringExtra("user") ?: ""
+        Toast.makeText(this, "User ID: $userId", Toast.LENGTH_SHORT).show()
+        Log.d("MainActivity7", "Received user_id: $userId, user: $user")
+
+        if (userId == -1) {
+            Log.e("MainActivity7", "Invalid user_id received")
+            Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
+        }
+
         mangInasalCart.setOnClickListener { goToCartPage("Kainan ni Mang Peping") }
         jollibeeCart.setOnClickListener { goToCartPage("Matutina") }
         greenwichCart.setOnClickListener { goToCartPage("Cuidad Elmina") }
-
     }
-
 
     private fun goToCartPage(restaurant: String) {
-        val user = intent.getStringExtra("user")
+        val user = intent.getStringExtra("user") ?: ""
+        val userId = intent.getIntExtra("user_id", -1)
 
-        val url = "${Constants.URL_GET_USER_ID}?username=$user"
-        val requestQueue = Volley.newRequestQueue(this)
+        if (userId == -1) {
+            Log.e("MainActivity7", "Invalid user_id for cart: $userId")
+            Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        val stringRequest = StringRequest(
-            Request.Method.GET, url,
-            { response ->
-                try {
-                    Log.d("CartActivity", "Raw API Response: $response")
-
-                    val jsonObject = JSONObject(response.trim())
-                    val userId = jsonObject.optInt("user_id")
-
-                    if (userId == -1) {
-                        Log.e("CartActivity", "Invalid response: Missing 'userId'")
-                        Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
-                        return@StringRequest
-                    }
-
-                    Log.d("CartActivity", "Fetched UserID: $userId")
-
-                    val intent = Intent(this, CartActivity::class.java).apply {
-                        putExtra("user", user)
-                        putExtra("restaurant", restaurant)
-                        putExtra("user_id", userId)
-                    }
-                    startActivity(intent)
-                } catch (e: JSONException) {
-                    Log.e("CartActivity", "JSON Parsing error: ${e.message}")
-                    Toast.makeText(this, "Error parsing user data", Toast.LENGTH_SHORT).show()
-                }
-            },
-            { error ->
-                Log.e("CartActivity", "Volley error: ${error.message}")
-                Toast.makeText(this, "Network error: ${error.message}", Toast.LENGTH_LONG).show()
-
-                error.networkResponse?.let {
-                    Log.e("CartActivity", "Error Response Code: ${it.statusCode}")
-                    Log.e("CartActivity", "Error Response Data: ${String(it.data)}")
-                }
-            }
-        )
-
-        requestQueue.add(stringRequest)
+        val intent = Intent(this, CartActivity::class.java).apply {
+            putExtra("user", user)
+            putExtra("restaurant", restaurant)
+            putExtra("user_id", userId)
+        }
+        Log.d("MainActivity7", "Going to CartActivity with user_id: $userId, user: $user, restaurant: $restaurant")
+        startActivity(intent)
     }
 
-
-
-
-
     private fun goToPageNine() {
-        val user = intent.getStringExtra("user")
+        val user = intent.getStringExtra("user") ?: ""
+        val userId = intent.getIntExtra("user_id", -1)
         val intent = Intent(this, MainTest::class.java)
         intent.putExtra("restaurant", "Kainan ni Mang Peping")
         intent.putExtra("user", user)
+        intent.putExtra("user_id", userId)
         startActivity(intent)
     }
 
     private fun goToPageTen() {
-        val user = intent.getStringExtra("user")
+        val user = intent.getStringExtra("user") ?: ""
+        val userId = intent.getIntExtra("user_id", -1)
         val intent = Intent(this, MainTest::class.java)
         intent.putExtra("restaurant", "Matutina")
         intent.putExtra("user", user)
+        intent.putExtra("user_id", userId)
         startActivity(intent)
     }
 
     private fun goToPageEleven() {
-        val user = intent.getStringExtra("user")
+        val user = intent.getStringExtra("user") ?: ""
+        val userId = intent.getIntExtra("user_id", -1)
         val intent = Intent(this, MainTest::class.java)
         intent.putExtra("restaurant", "Cuidad Elmina")
         intent.putExtra("user", user)
+        intent.putExtra("user_id", userId)
         startActivity(intent)
     }
 }
