@@ -12,7 +12,7 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-50dp">
+        android:layout_marginTop="-200dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -23,16 +23,10 @@
             android:id="@+id/backToItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="210dp"
             android:padding="15dp"
             android:src="@drawable/left_arrow" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="30dp"
-            android:src="@drawable/g_4930" />
     </FrameLayout>
 
     <TextView

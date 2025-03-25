@@ -1,8 +1,14 @@
 package com.example.hungryme
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.Manifest
+import android.provider.MediaStore
 import android.util.Log
 import android.view.WindowManager
 import android.widget.EditText
@@ -10,6 +16,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.android.volley.Cache
@@ -17,8 +25,11 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.android.volley.NoConnectionError
+import com.android.volley.TimeoutError
 import com.google.android.material.button.MaterialButton
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -42,7 +53,6 @@ class ProfileActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
         window.statusBarColor = Color.GREEN
-        setContentView(R.layout.activity_profile)
 
         editTextName = findViewById(R.id.editTextName)
         editTextEmail = findViewById(R.id.editTextEmail)
@@ -61,7 +71,6 @@ class ProfileActivity : AppCompatActivity() {
             updateProfile(userId)
         }
 
-        // Fetch profile info from the server every time the activity is created
         fetchProfileInfo(userId)
     }
 
@@ -69,20 +78,19 @@ class ProfileActivity : AppCompatActivity() {
         super.onStart()
         val userId = intent.getIntExtra("user_id", -1)
         if (userId != -1) {
-            fetchProfileInfo(userId) // Refresh data when the activity becomes visible
+            fetchProfileInfo(userId)
         }
     }
 
     private fun fetchProfileInfo(userId: Int) {
-        val url = "${Constants.URL_PROFILE_INFO}?user_id=$userId" // Ensure this points to your profile info endpoint
+        val url = "${Constants.URL_PROFILE_INFO}?user_id=$userId"
 
         val requestQueue = Volley.newRequestQueue(this)
         val jsonObjectRequest = object : JsonObjectRequest(
             Method.GET, url, null,
             { response ->
-                Log.d("ProfileFetch", "Response: $response") // Log the response for debugging
+                Log.d("ProfileFetch", "Response: $response")
                 if (response.getBoolean("success")) {
-                    // Update EditText fields with the latest server data
                     val username = response.getString("username")
                     val email = response.getString("email")
                     val deliveryAddress = response.getString("delivery_address")
@@ -99,7 +107,6 @@ class ProfileActivity : AppCompatActivity() {
                 Log.e("ProfileFetch", "Error: ${error.message}")
             }
         ) {
-            // Disable caching to ensure fresh data is fetched every time
             override fun getCacheEntry(): Cache.Entry? {
                 return null
             }
@@ -109,7 +116,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun updateProfile(userId: Int) {
-        val url = Constants.URL_UPDATE_PROFILE // Ensure this is set to "http://your-server/updateProfile.php"
+        val url = Constants.URL_UPDATE_PROFILE
 
         val requestQueue = Volley.newRequestQueue(this)
 
@@ -124,7 +131,6 @@ class ProfileActivity : AppCompatActivity() {
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
                 if (success) {
-                    // After successful update, fetch the latest profile info from the server
                     fetchProfileInfo(userId)
                 }
             },
