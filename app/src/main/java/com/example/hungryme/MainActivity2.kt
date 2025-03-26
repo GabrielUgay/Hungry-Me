@@ -21,7 +21,7 @@ import org.json.JSONObject
 class MainActivity2 : AppCompatActivity() {
     private lateinit var editTextUsername: EditText
     private lateinit var editTextPassword: EditText
-    private lateinit var signUp: ImageView
+    private lateinit var signUp: TextView
     private lateinit var forgotPassword: TextView
     private lateinit var loginBtn: ImageView
     private lateinit var progressDialog: ProgressDialog

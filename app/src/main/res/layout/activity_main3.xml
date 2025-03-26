@@ -14,8 +14,8 @@
         android:id="@+id/alreadyHaveAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="98dp"
-        android:layout_marginTop="618dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="587dp"
         android:alpha="0.5"
         android:backgroundTint="#383A36"
         android:clickable="false"
@@ -28,14 +28,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <TextView
         android:id="@+id/login2"
-        android:layout_width="111dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="649dp"
-        android:background="@drawable/sign"
-        android:backgroundTint="#3FD721"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="587dp"
+        android:alpha="1"
+        android:backgroundTint="#383A36"
+        android:clickable="false"
+        android:fontFamily="sans-serif"
+        android:padding="0dp"
+        android:text="Login"
+        android:textColor="#5080AB"
+        android:textSize="15dp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

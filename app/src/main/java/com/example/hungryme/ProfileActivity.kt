@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -70,6 +71,26 @@ class ProfileActivity : AppCompatActivity() {
         updateProfile.setOnClickListener {
             updateProfile(userId)
         }
+
+        val logOutBtn = findViewById<MaterialButton>(R.id.logOutBtn)
+        logOutBtn.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Logout Confirmation")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // Clear stored user session
+                    SharedPrefManager.getInstance(applicationContext).logout()
+
+                    // Go back to the first page (assuming MainActivity2 is the login page)
+                    val intent = Intent(this, MainActivity2::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+
 
         fetchProfileInfo(userId)
     }

@@ -115,6 +115,7 @@
             android:text="Update Profile"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/logOutBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#3C2F2F"

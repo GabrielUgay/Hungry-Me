@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,7 @@ import org.json.JSONObject
 class MainActivity3 : AppCompatActivity() {
 
     private lateinit var registerBtn: ImageView
-    private lateinit var login2: ImageView
+    private lateinit var login2: TextView
 
     private lateinit var editTextEmail: EditText
     private lateinit var editTextUsername: EditText
