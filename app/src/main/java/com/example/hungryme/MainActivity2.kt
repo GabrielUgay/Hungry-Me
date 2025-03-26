@@ -3,7 +3,9 @@ package com.example.hungryme
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -55,6 +57,23 @@ class MainActivity2 : AppCompatActivity() {
 
         forgotPassword.setOnClickListener {
             startActivity(Intent(this, MainActivity4::class.java))
+        }
+
+        editTextPassword.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                if (event.rawX >= (editTextPassword.right - editTextPassword.compoundDrawables[2].bounds.width())) {
+                    if (editTextPassword.inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+                        editTextPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                        editTextPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_eye, 0)
+                    } else {
+                        editTextPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                        editTextPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.open_eye, 0)
+                    }
+                    editTextPassword.setSelection(editTextPassword.text.length)
+                    return@setOnTouchListener true
+                }
+            }
+            false
         }
 
         loginBtn.setOnClickListener {
