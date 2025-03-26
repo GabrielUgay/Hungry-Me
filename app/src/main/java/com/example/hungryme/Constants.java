@@ -27,4 +27,6 @@ public class Constants {
     public static final String URL_PROFILE_INFO = ROOT_URL + "profileInfo.php";
     public static final String URL_UPDATE_PROFILE = ROOT_URL + "updateProfile.php";
     public static final String URL_UPDATE_PROFILE_PIC = ROOT_URL + "updateProfilePic.php";
+    public static final String URL_GET_EMAIL_BY_USER_ID = ROOT_URL + "get_email_by_user_id.php";
+    public static final String URL_GET_NUMBER_BY_USER_ID = ROOT_URL + "get_phone_by_user_id.php";
 }
