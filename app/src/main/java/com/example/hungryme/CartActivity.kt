@@ -45,11 +45,6 @@ class CartActivity : AppCompatActivity(), OnItemQuantityChangeListener {
         }
 
         findViewById<ImageView>(R.id.closeCart).setOnClickListener {
-            val intent = Intent(this, MainActivity7::class.java).apply {
-                putExtra("user", user)
-                putExtra("user_id", userId)
-            }
-            startActivity(intent)
             finish()
         }
 

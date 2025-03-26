@@ -6,22 +6,31 @@
     android:orientation="vertical"
     android:background="#F5F5F5">
 
-    <!-- Toolbar/Title -->
-    <ImageView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/backButton"
-        android:src="@drawable/arrow_left"/>
+        android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View Orders"
-        android:textSize="24sp"
-        android:textColor="#212121"
-        android:padding="20dp"
-        android:background="#FFFFFF"
-        android:elevation="4dp"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingTop="20dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="20dp"
+            android:id="@+id/backButton"
+            android:src="@drawable/arrow_left"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Orders"
+            android:textSize="24sp"
+            android:textColor="#212121"
+            android:paddingTop="17dp" />
+
+    </LinearLayout>
 
     <!-- Now I want the orders to be displayed based on user id in here okay? -->
     <androidx.recyclerview.widget.RecyclerView
