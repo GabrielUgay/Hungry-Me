@@ -66,16 +66,10 @@
                 android:paddingStart="42dp"
                 android:drawablePadding="12dp"
                 android:textColor="#202020"
+                android:inputType="text"
                 android:hint="Search"
                 android:gravity="center_vertical"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="10dp"
-                android:layout_marginTop="-3dp"
-                android:src="@drawable/group3"
-                android:layout_gravity="center_vertical" />
         </LinearLayout>
 
         <HorizontalScrollView
@@ -539,41 +533,49 @@
 
             <ImageView
                 android:id="@+id/homePage2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
-                android:padding="20dp"
-                android:src="@drawable/home_page2" />
+                android:layout_marginTop="15dp"
+                android:padding="10dp"
+                android:src="@drawable/home_page2"
+                android:background="@drawable/rounded_imageview_background"
+                android:clickable="true" />
 
             <ImageView
                 android:id="@+id/profilePic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/user_profile"
-                android:padding="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="90dp"/>
+                android:padding="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="90dp"
+                android:background="@drawable/rounded_imageview_background"
+                android:clickable="true" />
 
             <ImageView
                 android:id="@+id/recentOrders"
                 android:layout_gravity="end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/order"
-                android:padding="20dp"
-                android:layout_marginTop="-3dp"
-                android:layout_marginEnd="80dp"/>
+                android:padding="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="80dp"
+                android:background="@drawable/rounded_imageview_background"
+                android:clickable="true" />
 
             <ImageView
                 android:id="@+id/favs"
                 android:layout_gravity="end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/favs"
-                android:padding="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"/>
+                android:padding="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/rounded_imageview_background"
+                android:clickable="true" />
 
         </FrameLayout>
 

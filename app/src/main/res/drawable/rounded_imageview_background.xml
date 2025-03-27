@@ -1,0 +1,15 @@
+<!-- res/drawable/rounded_imageview_background.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape>
+            <corners android:radius="20dp"/>
+            <solid android:color="#65E541"/> <!-- Pressed color -->
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <corners android:radius="20dp"/>
+            <solid android:color="#47DC1E"/> <!-- Default color -->
+        </shape>
+    </item>
+</selector>
