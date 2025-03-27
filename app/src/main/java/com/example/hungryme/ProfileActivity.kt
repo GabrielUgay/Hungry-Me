@@ -37,6 +37,7 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var editTextName: EditText
     lateinit var editTextEmail: EditText
     lateinit var editTextDeliveryAddress: EditText
+    lateinit var editTextPhoneNumber: EditText
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +59,7 @@ class ProfileActivity : AppCompatActivity() {
         editTextName = findViewById(R.id.editTextName)
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextDeliveryAddress = findViewById(R.id.editTextDeliveryAddress)
+        editTextPhoneNumber = findViewById(R.id.editTextPhoneNumber)
 
         val backToItems = findViewById<ImageView>(R.id.backToItems)
         backToItems.setOnClickListener {
@@ -115,10 +117,12 @@ class ProfileActivity : AppCompatActivity() {
                     val username = response.getString("username")
                     val email = response.getString("email")
                     val deliveryAddress = response.getString("delivery_address")
+                    val phoneNumber = response.getString("phone")
                     editTextName.setText(username)
                     editTextEmail.setText(email)
                     editTextDeliveryAddress.setText(deliveryAddress)
-                    Log.d("ProfileFetch", "Updated UI: $username, $email, $deliveryAddress")
+                    editTextPhoneNumber.setText(phoneNumber)
+                    Log.d("ProfileFetch", "Updated UI: $username, $email, $deliveryAddress, $phoneNumber")
                 } else {
                     Toast.makeText(this, response.getString("message"), Toast.LENGTH_SHORT).show()
                 }
@@ -169,6 +173,7 @@ class ProfileActivity : AppCompatActivity() {
                 params["username"] = editTextName.text.toString()
                 params["email"] = editTextEmail.text.toString()
                 params["delivery_address"] = editTextDeliveryAddress.text.toString()
+                params["phone"] = editTextPhoneNumber.text.toString()
                 return params
             }
         }

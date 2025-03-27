@@ -42,6 +42,7 @@
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="#202020"
         android:background="@drawable/edittext_background"
         android:padding="10dp"
         android:layout_marginHorizontal="20dp"
@@ -65,6 +66,7 @@
         android:background="@drawable/edittext_background"
         android:padding="10dp"
         android:layout_marginHorizontal="20dp"
+        android:textColor="#202020"
         android:textSize="16sp"
         android:inputType="textEmailAddress"
         android:layout_marginBottom="16dp" />
@@ -86,6 +88,27 @@
         android:background="@drawable/edittext_background"
         android:padding="10dp"
         android:textSize="16sp"
+        android:textColor="#202020"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:text="Phone Number"
+        android:textColor="#202020"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/editTextPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_background"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:textColor="#202020"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="16dp" />
 
